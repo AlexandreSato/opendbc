@@ -1,8 +1,9 @@
 "CM_ "IMPORT _stellantis_common.dbc";"
 
-BO_ 222 NEW_MSG_DE: 6 XXX
- SG_ STEER_ANGLE : 5|14@0+ (1,0) [0|7] "" XXX
- SG_ STEER_PRESSED : 19|12@0+ (1,0) [0|8191] "" XXX
+BO_ 222 EPS_1: 6 EPS
+ SG_ STEERING_ANGLE : 5|14@0+ (0.1,-716.8) [0|16383] "deg" XXX
+ SG_ STEERING_RATE : 19|12@0+ (0.5,-1000) [0|4095] "deg/s" XXX
+ SG_ UNKNOWN_1 : 20|1@0+ (1,0) [0|1] "" XXX
  SG_ COUNTER : 35|4@0+ (1,0) [0|15] "" XXX
  SG_ CHECKSUM : 47|8@0+ (1,0) [0|255] "" XXX
 
