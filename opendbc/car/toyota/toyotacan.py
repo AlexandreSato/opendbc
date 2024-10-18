@@ -55,6 +55,11 @@ def create_accel_command(packer, accel, pcm_cancel, permit_braking, standstill_r
   }
   return packer.make_can_msg("ACC_CONTROL", 0, values)
 
+def create_accel_command_2(packer, accel):
+  values = {
+    "ACCEL_CMD": accel,
+  }
+  return packer.make_can_msg("ACC_CONTROL_2", 0, values)
 
 def create_my_accel_command(packer, accel, accel_raw, stopping, pcm_cancel, standstill_req, lead, acc_type,
                          update_distance_line, fcw_alert):
