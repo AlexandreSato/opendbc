@@ -104,11 +104,11 @@ class CarInterface(CarInterfaceBase):
     ret.radarUnavailable = DBC[candidate]['radar'] is None or candidate in (NO_DSU_CAR - TSS2_CAR)
 
     # since we don't yet parse radar on TSS2/TSS-P radar-based ACC cars, gate longitudinal behind experimental toggle
-    if candidate in (RADAR_ACC_CAR | NO_DSU_CAR):
-      ret.experimentalLongitudinalAvailable = candidate in RADAR_ACC_CAR
+    if True: #candidate in (RADAR_ACC_CAR | NO_DSU_CAR):
+      ret.experimentalLongitudinalAvailable = True #candidate in RADAR_ACC_CAR
 
       # Disabling radar is only supported on TSS2 radar-ACC cars
-      if experimental_long and candidate in RADAR_ACC_CAR:
+      if experimental_long: #and candidate in RADAR_ACC_CAR:
         ret.flags |= ToyotaFlags.DISABLE_RADAR.value
 
     # openpilot longitudinal enabled by default:
@@ -117,7 +117,7 @@ class CarInterface(CarInterfaceBase):
     # openpilot longitudinal behind experimental long toggle:
     #  - TSS2 radar ACC cars (disables radar)
 
-    if ret.flags & ToyotaFlags.SECOC.value:
+    if ret.flags & ToyotaFlags.SECOC.value and not bool(ret.flags & ToyotaFlags.DISABLE_RADAR.value):
       ret.openpilotLongitudinalControl = False
     else:
       ret.openpilotLongitudinalControl = ret.enableDsu or \
