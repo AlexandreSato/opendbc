@@ -208,6 +208,8 @@ class CarController(CarControllerBase):
         main_accel_cmd = 0. if self.CP.flags & ToyotaFlags.SECOC.value else pcm_accel_cmd
         can_sends.append(toyotacan.create_accel_command(self.packer, main_accel_cmd, pcm_cancel_cmd, self.permit_braking, self.standstill_req, lead,
                                                         CS.acc_type, fcw_alert, self.distance_button))
+        can_sends.append(toyotacan.create_accel_command_to_cam(self.packer, main_accel_cmd, pcm_cancel_cmd, self.permit_braking, self.standstill_req, lead,
+                                                        CS.acc_type, fcw_alert, self.distance_button))
 
         if self.CP.flags & ToyotaFlags.SECOC.value and self.CP.flags & ToyotaFlags.DISABLE_RADAR.value:
           acc_cmd_2 = toyotacan.create_accel_command_2(self.packer, pcm_accel_cmd)
@@ -216,8 +218,15 @@ class CarController(CarControllerBase):
                               int(CS.secoc_synchronization['RESET_CNT']),
                               self.secoc_acc_message_counter,
                               acc_cmd_2)
-          self.secoc_acc_message_counter += 1
           can_sends.append(acc_cmd_2)
+          acc_cmd_3 = toyotacan.create_accel_command_2_to_cam(self.packer, pcm_accel_cmd)
+          acc_cmd_3 = add_mac(self.secoc_key,
+                              int(CS.secoc_synchronization['TRIP_CNT']),
+                              int(CS.secoc_synchronization['RESET_CNT']),
+                              self.secoc_acc_message_counter,
+                              acc_cmd_3)
+          can_sends.append(acc_cmd_3)
+          self.secoc_acc_message_counter += 1
 
         self.accel = pcm_accel_cmd
 

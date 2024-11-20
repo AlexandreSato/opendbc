@@ -55,11 +55,32 @@ def create_accel_command(packer, accel, pcm_cancel, permit_braking, standstill_r
   }
   return packer.make_can_msg("ACC_CONTROL", 0, values)
 
+def create_accel_command_to_cam(packer, accel, pcm_cancel, permit_braking, standstill_req, lead, acc_type, fcw_alert, distance):
+  # TODO: find the exact canceling bit that does not create a chime
+  values = {
+    "ACCEL_CMD": accel,
+    "ACC_TYPE": acc_type,
+    "DISTANCE": distance,
+    "MINI_CAR": lead,
+    "PERMIT_BRAKING": permit_braking,
+    "RELEASE_STANDSTILL": not standstill_req,
+    "CANCEL_REQ": pcm_cancel,
+    "ALLOW_LONG_PRESS": 1,
+    "ACC_CUT_IN": fcw_alert,  # only shown when ACC enabled
+  }
+  return packer.make_can_msg("ACC_CONTROL", 2, values)
+
 def create_accel_command_2(packer, accel):
   values = {
     "ACCEL_CMD": accel,
   }
   return packer.make_can_msg("ACC_CONTROL_2", 0, values)
+
+def create_accel_command_2_to_cam(packer, accel):
+  values = {
+    "ACCEL_CMD": accel,
+  }
+  return packer.make_can_msg("ACC_CONTROL_2", 2, values)
 
 def create_pcs_commands(packer, accel, active, mass):
   values1 = {
