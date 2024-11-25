@@ -48,7 +48,8 @@ class CarState(CarStateBase):
 
     self.pcm_follow_distance = 0
 
-    self.acc_type = 1
+    # self.acc_type = 1
+    self.acc_type = 3
     self.lkas_hud = {}
     self.pcm_accel_net = 0.0
     self.secoc_synchronization = None
@@ -163,7 +164,7 @@ class CarState(CarStateBase):
     # if self.CP.carFingerprint in TSS2_CAR and not self.CP.flags & ToyotaFlags.DISABLE_RADAR.value:
     #   self.acc_type = cp_acc.vl["ACC_CONTROL"]["ACC_TYPE"]
     #   ret.stockFcw = bool(cp_acc.vl["PCS_HUD"]["FCW"])
-    self.acc_type = cp_acc.vl["ACC_CONTROL"]["ACC_TYPE"]
+    # self.acc_type = cp_acc.vl["ACC_CONTROL"]["ACC_TYPE"]
 
     # some TSS2 cars have low speed lockout permanently set, so ignore on those cars
     # these cars are identified by an ACC_TYPE value of 2.
@@ -269,7 +270,7 @@ class CarState(CarStateBase):
 
     if CP.carFingerprint in (TSS2_CAR - RADAR_ACC_CAR):
       messages += [
-        ("ACC_CONTROL", 33),
+        # ("ACC_CONTROL", 33),
         # ("PCS_HUD", 1),
       ]
 
