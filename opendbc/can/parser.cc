@@ -228,11 +228,12 @@ void CANParser::UpdateValid(uint64_t nanos) {
       if (show_missing && !bus_timeout) {
         if (missing) {
           LOGE_100("0x%X '%s' NOT SEEN", state.address, state.name.c_str());
+          _valid = false;
         } else if (timed_out) {
           LOGE_100("0x%X '%s' TIMED OUT", state.address, state.name.c_str());
         }
       }
-      _valid = false;
+      // _valid = false;
     }
   }
   can_invalid_cnt = _valid ? 0 : (can_invalid_cnt + 1);

@@ -154,6 +154,6 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   def init(CP, can_recv, can_send):
     # disable radar if alpha longitudinal toggled on radar-ACC car
-    if CP.flags & ToyotaFlags.DISABLE_RADAR.value:
+    if CP.flags & ToyotaFlags.DISABLE_RADAR.value and False:
       communication_control = bytes([uds.SERVICE_TYPE.COMMUNICATION_CONTROL, uds.CONTROL_TYPE.ENABLE_RX_DISABLE_TX, uds.MESSAGE_TYPE.NORMAL])
       disable_ecu(can_recv, can_send, bus=0, addr=0x750, sub_addr=0xf, com_cont_req=communication_control)
