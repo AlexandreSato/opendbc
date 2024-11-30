@@ -48,8 +48,7 @@ class CarState(CarStateBase):
 
     self.pcm_follow_distance = 0
 
-    # self.acc_type = 1
-    self.acc_type = 2
+    self.acc_type = 1
     self.lkas_hud = {}
     self.pcm_accel_net = 0.0
     self.secoc_synchronization = None
