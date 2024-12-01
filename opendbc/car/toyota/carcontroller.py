@@ -31,6 +31,14 @@ MAX_LTA_ANGLE = 94.9461  # deg
 MAX_LTA_DRIVER_TORQUE_ALLOWANCE = 150  # slightly above steering pressed allows some resistance when changing lanes
 
 
+# stopped after radar disabled maybe PCM is missing
+# 1Hz   0x494     c3 00 00 00 00 00 00 00
+FAKE_ECU_1 =  b'\xC3\x00\x00\x00\x00\x00\x00\x00'
+
+# 0.8Hz 0x4ff     3f 00 00 00 00 00 00 00
+FAKE_ECU_2 =  b'\x3F\x00\x00\x00\x00\x00\x00\x00'
+
+
 class CarController(CarControllerBase):
   def __init__(self, dbc_name, CP):
     super().__init__(dbc_name, CP)
@@ -268,6 +276,16 @@ class CarController(CarControllerBase):
     # keep radar disabled
     if self.frame % 20 == 0 and self.CP.flags & ToyotaFlags.DISABLE_RADAR.value:
       can_sends.append(make_tester_present_msg(0x750, 0, 0xF))
+
+    # emulate fake ECUs
+    def make_can_msg(addr, dat, bus):
+      return [addr, dat, bus]
+    if self.CP.flags & ToyotaFlags.DISABLE_RADAR.value:
+      if self.frame % 100 == 0:
+        can_sends.append(make_can_msg(0x494, FAKE_ECU_1, 0))
+      if self.frame % 125 == 0:
+        can_sends.append(make_can_msg(0x4FF, FAKE_ECU_2, 0))
+
 
     new_actuators = actuators.as_builder()
     new_actuators.steer = apply_steer / self.params.STEER_MAX
