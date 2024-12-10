@@ -255,7 +255,7 @@ class CAR(Platforms):
     CarSpecs(mass=4372. * CV.LB_TO_KG, wheelbase=2.68, steerRatio=16.88, tireStiffnessFactor=0.5533),
     # dbc_dict('toyota_rav4_prime_generated', 'toyota_tss2_adas'),
     dbc_dict('toyota_rav4_prime_generated', None),
-    flags=ToyotaFlags.TSS2 | ToyotaFlags.NO_STOP_TIMER | ToyotaFlags.NO_DSU | ToyotaFlags.SECOC,
+    flags=ToyotaFlags.TSS2 | ToyotaFlags.NO_STOP_TIMER | ToyotaFlags.NO_DSU | ToyotaFlags.SECOC | ToyotaFlags.RADAR_ACC,
   )
   TOYOTA_MIRAI = ToyotaTSS2PlatformConfig( # TSS 2.5
     [ToyotaCarDocs("Toyota Mirai 2021")],
