@@ -20,8 +20,6 @@ def _create_radar_can_parser(car_fingerprint):
   return CANParser(DBC[car_fingerprint]['radar'], messages, 1)
 
 class RadarInterface(RadarInterfaceBase):
-  pass
-
   def __init__(self, CP):
     super().__init__(CP)
     self.track_id = 0
