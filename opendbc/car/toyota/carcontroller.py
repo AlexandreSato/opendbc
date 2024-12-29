@@ -322,17 +322,17 @@ class CarController(CarControllerBase):
           # PCM compensation Transition Logic (enter only at first positive calculation)
           if CS.out.gasPressed or not CS.out.cruiseState.enabled:
             self.reset_pcm_compensation = True
-          # if CS.pcm_neutral_force >= 0:
-          #   self.reset_pcm_compensation = False
+          if not self.CP.flags & ToyotaFlags.SECOC.value and CS.pcm_neutral_force >= 0:
+            self.reset_pcm_compensation = False
 
           # NO_STOP_TIMER_CAR will creep if compensation is applied when stopping or stopped, don't compensate when stopped or stopping
           should_compensate = True
           if self.CP.carFingerprint in NO_STOP_TIMER_CAR and ((CS.out.vEgo <  1e-3 and actuators.accel < 1e-3) or stopping):
             should_compensate = False
-          # if CC.longActive and should_compensate and not self.reset_pcm_compensation:
-          #   accel_offset = CS.pcm_neutral_force / self.CP.mass
-          # else:
-          accel_offset = 0.
+          if not self.CP.flags & ToyotaFlags.SECOC.value and CC.longActive and should_compensate and not self.reset_pcm_compensation:
+            accel_offset = CS.pcm_neutral_force / self.CP.mass
+          else:
+            accel_offset = 0.
           if not CS.out.gasPressed:
             pcm_accel_cmd = clip(pcm_my_accel_cmd + accel_offset, self.params.ACCEL_MIN, self.params.ACCEL_MAX)
           else:
