@@ -322,14 +322,14 @@ class CarController(CarControllerBase):
           # PCM compensation Transition Logic (enter only at first positive calculation)
           if CS.out.gasPressed or not CS.out.cruiseState.enabled:
             self.reset_pcm_compensation = True
-          if not self.CP.flags & ToyotaFlags.SECOC.value and CS.pcm_neutral_force >= 0:
+          if CS.pcm_neutral_force >= 0:
             self.reset_pcm_compensation = False
 
           # NO_STOP_TIMER_CAR will creep if compensation is applied when stopping or stopped, don't compensate when stopped or stopping
           should_compensate = True
           if self.CP.carFingerprint in NO_STOP_TIMER_CAR and ((CS.out.vEgo <  1e-3 and actuators.accel < 1e-3) or stopping):
             should_compensate = False
-          if not self.CP.flags & ToyotaFlags.SECOC.value and CC.longActive and should_compensate and not self.reset_pcm_compensation:
+          if CC.longActive and should_compensate and not self.reset_pcm_compensation:
             accel_offset = CS.pcm_neutral_force / self.CP.mass
           else:
             accel_offset = 0.
@@ -345,15 +345,15 @@ class CarController(CarControllerBase):
         else:
           can_sends.append(toyotacan.create_accel_command(self.packer, pcm_accel_cmd, pcm_cancel_cmd, self.permit_braking, self.standstill_req, lead,
                                                           CS.acc_type, fcw_alert, self.distance_button))
-        if self.CP.flags & ToyotaFlags.SECOC.value:
-          acc_cmd_2 = toyotacan.create_accel_command_2(self.packer, pcm_accel_cmd)
-          acc_cmd_2 = add_mac(self.secoc_key,
-                              int(CS.secoc_synchronization['TRIP_CNT']),
-                              int(CS.secoc_synchronization['RESET_CNT']),
-                              self.secoc_acc_message_counter,
-                              acc_cmd_2)
-          self.secoc_acc_message_counter += 1
-          can_sends.append(acc_cmd_2)
+          if self.CP.flags & ToyotaFlags.SECOC.value:
+            acc_cmd_2 = toyotacan.create_accel_command_2(self.packer, pcm_accel_cmd)
+            acc_cmd_2 = add_mac(self.secoc_key,
+                                int(CS.secoc_synchronization['TRIP_CNT']),
+                                int(CS.secoc_synchronization['RESET_CNT']),
+                                self.secoc_acc_message_counter,
+                                acc_cmd_2)
+            self.secoc_acc_message_counter += 1
+            can_sends.append(acc_cmd_2)
 
         self.accel = pcm_accel_cmd
 
