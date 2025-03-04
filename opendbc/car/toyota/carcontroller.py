@@ -129,39 +129,36 @@ class CarController(CarControllerBase):
           carlog.error("SecOC synchronization MAC mismatch, wrong key?")
 
     # *** steer torque ***
-    new_steer = int(round(actuators.steer * self.params.STEER_MAX))
-    apply_steer = apply_meas_steer_torque_limits(new_steer, self.last_steer, CS.out.steeringTorqueEps, self.params)
+    new_torque = int(round(actuators.torque * self.params.STEER_MAX))
+    apply_torque = apply_meas_steer_torque_limits(new_torque, self.last_steer, CS.out.steeringTorqueEps, self.params)
 
     # >100 degree/sec steering fault prevention
     self.steer_rate_counter, apply_steer_req = common_fault_avoidance(abs(CS.out.steeringRateDeg) >= MAX_STEER_RATE, lat_active,
                                                                       self.steer_rate_counter, MAX_STEER_RATE_FRAMES)
 
     if not lat_active:
-      apply_steer = 0
+      apply_torque = 0
 
     # *** steer angle ***
     if self.CP.steerControlType == SteerControlType.angle:
       # If using LTA control, disable LKA and set steering angle command
-      apply_steer = 0
+      apply_torque = 0
       apply_steer_req = False
       if self.frame % 2 == 0:
         # EPS uses the torque sensor angle to control with, offset to compensate
         apply_angle = actuators.steeringAngleDeg + CS.out.steeringAngleOffsetDeg
 
         # Angular rate limit based on speed
-        apply_angle = apply_std_steer_angle_limits(apply_angle, self.last_angle, CS.out.vEgoRaw, self.params)
+        self.last_angle = apply_std_steer_angle_limits(apply_angle, self.last_angle, CS.out.vEgoRaw,
+                                                       CS.out.steeringAngleDeg + CS.out.steeringAngleOffsetDeg,
+                                                       CC.latActive, self.params.ANGLE_LIMITS)
 
-        if not lat_active:
-          apply_angle = CS.out.steeringAngleDeg + CS.out.steeringAngleOffsetDeg
-
-        self.last_angle = float(np.clip(apply_angle, -MAX_LTA_ANGLE, MAX_LTA_ANGLE))
-
-    self.last_steer = apply_steer
+    self.last_steer = apply_torque
 
     # toyota can trace shows STEERING_LKA at 42Hz, with counter adding alternatively 1 and 2;
     # sending it at 100Hz seem to allow a higher rate limit, as the rate limit seems imposed
     # on consecutive messages
-    steer_command = toyotacan.create_steer_command(self.packer, apply_steer, apply_steer_req)
+    steer_command = toyotacan.create_steer_command(self.packer, apply_torque, apply_steer_req)
     if self.CP.flags & ToyotaFlags.SECOC.value:
       # TODO: check if this slow and needs to be done by the CANPacker
       steer_command = add_mac(self.secoc_key,
@@ -178,7 +175,7 @@ class CarController(CarControllerBase):
       # cut steering torque with TORQUE_WIND_DOWN when either EPS torque or driver torque is above
       # the threshold, to limit max lateral acceleration and for driver torque blending respectively.
       full_torque_condition = (abs(CS.out.steeringTorqueEps) < self.params.STEER_MAX and
-                               abs(CS.out.steeringTorque) < MAX_LTA_DRIVER_TORQUE_ALLOWANCE)
+                               abs(CS.out.steeringTorque) < self.params.MAX_LTA_DRIVER_TORQUE_ALLOWANCE)
 
       # TORQUE_WIND_DOWN at 0 ramps down torque at roughly the max down rate of 1500 units/sec
       torque_wind_down = 100 if lta_active and full_torque_condition else 0
@@ -396,8 +393,8 @@ class CarController(CarControllerBase):
       can_sends.append(make_tester_present_msg(0x750, 0, 0xF))
 
     new_actuators = actuators.as_builder()
-    new_actuators.steer = apply_steer / self.params.STEER_MAX
-    new_actuators.steerOutputCan = apply_steer
+    new_actuators.torque = apply_torque / self.params.STEER_MAX
+    new_actuators.torqueOutputCan = apply_torque
     new_actuators.steeringAngleDeg = self.last_angle
     new_actuators.accel = self.accel
 
