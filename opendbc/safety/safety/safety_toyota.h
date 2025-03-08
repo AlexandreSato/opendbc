@@ -22,24 +22,23 @@
   {0x411, 0, 8},  /* PCS_HUD */                                                                                                             \
   {0x750, 0, 8},  /* radar diagnostic address */                                                                                            \
 
-#define TOYOTA_COMMON_LONG_SECOC_TX_MSGS                                                                                                    \
-  TOYOTA_COMMON_SECOC_TX_MSGS                                                                                                               \
-  {0x283, 0, 7}, {0x2E6, 0, 8}, {0x2E7, 0, 8}, {0x33E, 0, 7}, {0x344, 0, 8}, {0x365, 0, 7}, {0x366, 0, 7}, {0x4CB, 0, 8},  /* DSU bus 0 */  \
-  {0x128, 1, 6}, {0x141, 1, 4}, {0x160, 1, 8}, {0x161, 1, 7}, {0x470, 1, 4},  /* DSU bus 1 */                                               \
-  {0x411, 0, 8},  /* PCS_HUD */                                                                                                             \
-  {0x750, 0, 8},  /* radar diagnostic address */                                                                                            \
-  {0x183, 0, 8},                                                                                                                            \
+#define TOYOTA_COMMON_RX_CHECKS(lta)                                                                          \
+  {.msg = {{ 0xaa, 0, 8, .ignore_checksum = true, .ignore_counter = true, .frequency = 83U}, { 0 }, { 0 }}},  \
+  {.msg = {{0x260, 0, 8, .ignore_counter = true, .quality_flag = (lta), .frequency = 50U}, { 0 }, { 0 }}},    \
+  {.msg = {{0x1D3, 0, 8, .ignore_counter = true, .frequency = 33U}, { 0 }, { 0 }}}, /* MADS Cruise Main */  \
+  {.msg = {{0x412, 2, 8, .ignore_checksum = true, .ignore_counter = true, .frequency = 01U}, { 0 }, { 0 }}}, /* MADS LKAS Button */ \
 
-#define TOYOTA_COMMON_RX_CHECKS(lta)                                                                        \
-  {.msg = {{ 0xaa, 0, 8, .check_checksum = false, .frequency = 83U}, { 0 }, { 0 }}},                        \
-  {.msg = {{0x260, 0, 8, .check_checksum = true, .quality_flag = (lta), .frequency = 50U}, { 0 }, { 0 }}},  \
-  {.msg = {{0x1D2, 0, 8, .check_checksum = true, .frequency = 33U},                                         \
-           {0x176, 0, 8, .check_checksum = true, .frequency = 32U}, { 0 }}},                                \
-  {.msg = {{0x1D3, 0, 8, .check_checksum = true, .frequency = 33U}, { 0 }, { 0 }}}, /* MADS Cruise Main */  \
-  {.msg = {{0x412, 2, 8, .check_checksum = false, .frequency = 01U}, { 0 }, { 0 }}}, /* MADS LKAS Button */ \
-  {.msg = {{0x101, 0, 8, .check_checksum = false, .frequency = 50U},                                        \
-           {0x224, 0, 8, .check_checksum = false, .frequency = 40U},                                        \
-           {0x226, 0, 8, .check_checksum = false, .frequency = 40U}}},                                      \
+#define TOYOTA_RX_CHECKS(lta)                                                                          \
+  TOYOTA_COMMON_RX_CHECKS(lta)                                                                         \
+  {.msg = {{0x1D2, 0, 8, .ignore_counter = true, .frequency = 33U}, { 0 }, { 0 }}},                    \
+  {.msg = {{0x224, 0, 8, .ignore_checksum = true, .ignore_counter = true, .frequency = 40U},           \
+           {0x226, 0, 8, .ignore_checksum = true, .ignore_counter = true, .frequency = 40U}, { 0 }}},  \
+
+#define TOYOTA_SECOC_RX_CHECKS                                                                                \
+  TOYOTA_COMMON_RX_CHECKS(false)                                                                              \
+  {.msg = {{0x176, 0, 8, .ignore_counter = true, .frequency = 32U}, { 0 }, { 0 }}},                           \
+  {.msg = {{0x116, 0, 8, .ignore_checksum = true, .ignore_counter = true, .frequency = 42U}, { 0 }, { 0 }}},  \
+  {.msg = {{0x101, 0, 8, .ignore_checksum = true, .ignore_counter = true, .frequency = 50U}, { 0 }, { 0 }}},  \
 
 static bool toyota_secoc = false;
 static bool toyota_alt_brake = false;
@@ -415,16 +414,22 @@ static safety_config toyota_init(uint16_t param) {
     }
   }
 
-  if (toyota_lta) {
+  if (toyota_secoc) {
+    static RxCheck toyota_secoc_rx_checks[] = {
+      TOYOTA_SECOC_RX_CHECKS
+    };
+
+    SET_RX_CHECKS(toyota_secoc_rx_checks, ret);
+  } else if (toyota_lta) {
     // Check the quality flag for angle measurement when using LTA, since it's not set on TSS-P cars
     static RxCheck toyota_lta_rx_checks[] = {
-      TOYOTA_COMMON_RX_CHECKS(true)
+      TOYOTA_RX_CHECKS(true)
     };
 
     SET_RX_CHECKS(toyota_lta_rx_checks, ret);
   } else {
     static RxCheck toyota_lka_rx_checks[] = {
-      TOYOTA_COMMON_RX_CHECKS(false)
+      TOYOTA_RX_CHECKS(false)
     };
 
     SET_RX_CHECKS(toyota_lka_rx_checks, ret);
