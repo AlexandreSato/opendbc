@@ -352,7 +352,7 @@ static bool toyota_tx_hook(const CANPacket_t *to_send) {
     }
 
     // AleSato's automatic brakehold
-    if ((addr == 0x344) && (alternative_experience & ALT_EXP_ALLOW_AEB)) {
+    if ((addr == 0x344)) {
       if(vehicle_moving || gas_pressed || !acc_main_on) {
         tx = false;
       }
@@ -460,7 +460,7 @@ static bool toyota_fwd_hook(int bus_num, int addr) {
   bool block_msg = false;
   if (bus_num == 2) {
     // Block AEB when stopped to use as a automatic brakehold
-    bool is_aeb_msg = ((addr == 0x344) && (alternative_experience & ALT_EXP_ALLOW_AEB));
+    bool is_aeb_msg = ((addr == 0x344));
     block_msg = (is_aeb_msg && !vehicle_moving && acc_main_on && !gas_pressed);
   }
 
