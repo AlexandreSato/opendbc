@@ -222,7 +222,7 @@ class CarState(CarStateBase):
       self.prev_lkas_enabled = self.lkas_enabled
 
     # Automatic BrakeHold
-    if (self.CP.carFingerprint in TSS2_CAR) and (not self.CP.flags & ToyotaFlags.SECOC.value):
+    if (self.CP.carFingerprint == CAR.TOYOTA_COROLLA_TSS2) and (not self.CP.flags & ToyotaFlags.SECOC.value):
       self.stock_aeb = copy.copy(cp_cam.vl["PRE_COLLISION_2"])
       self.brakehold_condition_satisfied =  (ret.standstill and ret.cruiseState.available and not ret.gasPressed and \
                                             not ret.cruiseState.enabled and (ret.gearShifter not in (self.GearShifter.reverse,\
@@ -350,7 +350,7 @@ class CarState(CarStateBase):
         ]
 
     # AleSato
-    if (CP.carFingerprint in TSS2_CAR) and (not CP.flags & ToyotaFlags.SECOC.value):
+    if (CP.carFingerprint == CAR.TOYOTA_COROLLA_TSS2) and (not CP.flags & ToyotaFlags.SECOC.value):
       cam_messages += [
         ("PRE_COLLISION_2", 33),
       ]
