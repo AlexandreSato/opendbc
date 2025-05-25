@@ -93,15 +93,15 @@ static void toyota_rx_hook(const CANPacket_t *to_push) {
   if (GET_BUS(to_push) == 2U) {
     int addr = GET_ADDR(to_push);
     if (addr == 0x412) {
-      bool set_me = (GET_BYTE(to_push, 0) & 0xC0U) > 0; // LKAS_STATUS
-      bool set_me2 = (GET_BYTE(to_push, 3) & 0xC0U) > 0; // LDA_ON_MESSAGE
-      if(set_me && !set_me_prev) {
+      bool set_me = (GET_BYTE(to_push, 0) & 0xC0U) != 0U; // LKAS_STATUS
+      bool set_me2 = (GET_BYTE(to_push, 3) & 0xC0U) != 0U; // LDA_ON_MESSAGE
+      if (set_me && !set_me_prev) {
         lateral_controls_allowed = 1;
         print("activate by LKAS_STATUS\n");
-      } else if(set_me2 && !set_me_prev) {
+      } else if (set_me2 && !set_me_prev) {
         lateral_controls_allowed = 1;
         print("ACTIVATE by LDA_ON_MESSAGE\n\n");
-      }
+      } else { /* do nothing just to satisfy MISRA 15.7 */}
       set_me_prev = set_me || set_me2;
     }
   } else if (GET_BUS(to_push) == 0U) {
@@ -189,7 +189,7 @@ static void toyota_rx_hook(const CANPacket_t *to_push) {
 
       UPDATE_VEHICLE_SPEED(speed / 4.0 * 0.01 / 3.6);
     }
-  }
+  } else { /* do nothing just to satisfy MISRA 15.7 */}
 }
 
 static bool toyota_tx_hook(const CANPacket_t *to_send) {
@@ -353,7 +353,7 @@ static bool toyota_tx_hook(const CANPacket_t *to_send) {
 
     // AleSato's automatic brakehold
     if ((addr == 0x344) && (alternative_experience & ALT_EXP_ALLOW_AEB)) {
-      if(vehicle_moving || gas_pressed || !acc_main_on) {
+      if (vehicle_moving || gas_pressed || !acc_main_on) {
         tx = false;
       }
     }
