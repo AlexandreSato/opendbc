@@ -90,21 +90,7 @@ static bool toyota_get_quality_flag_valid(const CANPacket_t *to_push) {
 }
 
 static void toyota_rx_hook(const CANPacket_t *to_push) {
-  if (GET_BUS(to_push) == 2U) {
-    int addr = GET_ADDR(to_push);
-    if (addr == 0x412) {
-      bool set_me = (GET_BYTE(to_push, 0) & 0xC0U) != 0U; // LKAS_STATUS
-      bool set_me2 = (GET_BYTE(to_push, 3) & 0xC0U) != 0U; // LDA_ON_MESSAGE
-      if (set_me && !set_me_prev) {
-        lateral_controls_allowed = 1;
-        print("activate by LKAS_STATUS\n");
-      } else if (set_me2 && !set_me_prev) {
-        lateral_controls_allowed = 1;
-        print("ACTIVATE by LDA_ON_MESSAGE\n\n");
-      } else { /* do nothing just to satisfy MISRA 15.7 */}
-      set_me_prev = set_me || set_me2;
-    }
-  } else if (GET_BUS(to_push) == 0U) {
+  if (GET_BUS(to_push) == 0U) {
     int addr = GET_ADDR(to_push);
 
     // get eps motor torque (0.66 factor in dbc)
@@ -170,9 +156,10 @@ static void toyota_rx_hook(const CANPacket_t *to_push) {
       // ACC main switch on is a prerequisite to enter controls, exit controls immediately on main switch off
       // Signal: PCM_CRUISE_2/MAIN_ON at 15th bit
       acc_main_on = GET_BIT(to_push, 15U);
-      if (!acc_main_on) {
+      if (acc_main_on) {
+        lateral_controls_allowed = 1;
+      } else {
         lateral_controls_allowed = 0;
-        print("DISALLOWED \n");
       }
     }
 
@@ -189,7 +176,7 @@ static void toyota_rx_hook(const CANPacket_t *to_push) {
 
       UPDATE_VEHICLE_SPEED(speed / 4.0 * 0.01 / 3.6);
     }
-  } else { /* do nothing just to satisfy MISRA 15.7 */}
+  }
 }
 
 static bool toyota_tx_hook(const CANPacket_t *to_send) {
