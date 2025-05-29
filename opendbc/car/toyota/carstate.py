@@ -208,7 +208,7 @@ class CarState(CarStateBase):
 
     if self.CP.carFingerprint != CAR.TOYOTA_PRIUS_V:
       self.lkas_hud = copy.copy(cp_cam.vl["LKAS_HUD"])
-      self.lkas_button = cp_cam.vl["LKAS_HUD"]["LKAS_STATUS"]
+      self.lkas_button = cp_cam.vl["LKAS_HUD"]["LKAS_STATUS"] != 0
       if self.prev_lkas_button is None:
         self.prev_lkas_button = self.lkas_button
       if self.prev_lkas_button != self.lkas_button and not self.mem_params.get_bool("AleSato_SteerAlwaysOn") and ret.cruiseState.available:
