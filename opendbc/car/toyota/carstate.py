@@ -220,7 +220,7 @@ class CarState(CarStateBase):
       else:
         ret.madsEnabled = False
       # not is a physical button, just a dash icon this ensures that MADS will not be disengaged in the middle of a turn
-      ret.invalidLkasSetting = cp_cam.vl["LKAS_HUD"]["LKAS_STATUS"] == 1
+      ret.invalidLkasSetting = cp_cam.vl["LKAS_HUD"]["LDA_SA_TOGGLE"] == 1
       self.prev_lkas_button = self.lkas_button
 
     # Automatic BrakeHold
