@@ -75,6 +75,7 @@ class CarState(CarStateBase):
     self.brakehold_condition_counter = 0
     self.reset_brakehold = False
     self.prev_brakePressed = True
+    self.slope_angle = 0.0
     # ret.brakeholdGovernor = False
 
 
@@ -229,7 +230,8 @@ class CarState(CarStateBase):
       self.brakehold_condition_satisfied =  (ret.standstill and ret.cruiseState.available and not ret.gasPressed and \
                                             not ret.cruiseState.enabled and (ret.gearShifter not in (self.GearShifter.reverse,\
                                             self.GearShifter.park))and self.params.get_bool('AleSato_AutomaticBrakeHold'))
-      if self.brakehold_condition_satisfied:
+      self.slope_angle = cp.vl["VSC1S07"]["ASLP"] # filtered pitch estimate from the car, negative is a downward slope
+      if self.brakehold_condition_satisfied and self.slope_angle > -3:
         if self.brakehold_condition_counter > self.time_to_brakehold and not self.reset_brakehold:
           ret.brakeholdGovernor = True
         else:
