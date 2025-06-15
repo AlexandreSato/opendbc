@@ -76,6 +76,7 @@ class CarState(CarStateBase):
     self.reset_brakehold = False
     self.prev_brakePressed = True
     self.slope_angle = 0.0
+    self.retain_brakehold = False
     # ret.brakeholdGovernor = False
 
 
@@ -230,19 +231,22 @@ class CarState(CarStateBase):
       self.brakehold_condition_satisfied =  (ret.standstill and ret.cruiseState.available and not ret.gasPressed and \
                                             not ret.cruiseState.enabled and (ret.gearShifter not in (self.GearShifter.reverse,\
                                             self.GearShifter.park))and self.params.get_bool('AleSato_AutomaticBrakeHold'))
-      self.slope_angle = cp.vl["VSC1S07"]["ASLP"] # filtered pitch estimate from the car, negative is a downward slope
-      if self.brakehold_condition_satisfied and self.slope_angle > -3:
-        if self.brakehold_condition_counter > self.time_to_brakehold and not self.reset_brakehold:
-          ret.brakeholdGovernor = True
-        else:
-          ret.brakeholdGovernor = False
-        if not self.prev_brakePressed and ret.brakePressed: # disable automatic brakehold in second brakePress
-          self.reset_brakehold = True
-        self.brakehold_condition_counter += 1
+      if self.brakehold_condition_satisfied:
+        self.slope_angle = cp.vl["VSC1S07"]["ASLP"] # filtered pitch estimate from the car, negative is a downward slope
+        if self.slope_angle > -3 or self.retain_brakehold:
+          self.retain_brakehold = True
+          if self.brakehold_condition_counter > self.time_to_brakehold and not self.reset_brakehold:
+            ret.brakeholdGovernor = True
+          else:
+            ret.brakeholdGovernor = False
+          if not self.prev_brakePressed and ret.brakePressed: # disable automatic brakehold in second brakePress
+            self.reset_brakehold = True
+          self.brakehold_condition_counter += 1
       else:
         ret.brakeholdGovernor = False
         self.reset_brakehold = False
         self.brakehold_condition_counter = 0
+        self.retain_brakehold = False
       self.prev_brakePressed = ret.brakePressed
 
     if self.CP.carFingerprint not in UNSUPPORTED_DSU_CAR:
