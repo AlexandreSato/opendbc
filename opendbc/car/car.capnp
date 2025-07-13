@@ -566,7 +566,6 @@ struct CarParams {
   }
 
   struct LateralTorqueTuning {
-    useSteeringAngle @0 :Bool;
     kp @1 :Float32;
     ki @2 :Float32;
     friction @3 :Float32;
@@ -574,6 +573,7 @@ struct CarParams {
     steeringAngleDeadzoneDeg @5 :Float32;
     latAccelFactor @6 :Float32;
     latAccelOffset @7 :Float32;
+    useSteeringAngleDEPRECATED @0 :Bool;
   }
 
   struct LongitudinalPIDTuning {
