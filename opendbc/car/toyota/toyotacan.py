@@ -203,3 +203,14 @@ def create_brakehold_command(packer, stock_AEB, cut3frames):
     ]})
 
   return packer.make_can_msg("PRE_COLLISION_2", 0, values)
+
+
+def toyota_checksum(address: int, sig, d: bytearray) -> int:
+  s = len(d)
+  addr = address
+  while addr:
+    s += addr & 0xFF
+    addr >>= 8
+  for i in range(len(d) - 1):
+    s += d[i]
+  return s & 0xFF
