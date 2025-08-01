@@ -40,7 +40,6 @@
   {.msg = {{ 0xaa, 0, 8, 83U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},  \
   {.msg = {{0x260, 0, 8, 50U, .ignore_counter = true, .ignore_quality_flag=!(lta)}, { 0 }, { 0 }}},                           \
   {.msg = {{0x1D3, 0, 8, 33U, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, /* MADS Cruise Main */    \
-  {.msg = {{0x412, 2, 8, 01U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, /* MADS LKAS Button */ \
 
 #define TOYOTA_RX_CHECKS(lta)                                                                                                               \
   TOYOTA_COMMON_RX_CHECKS(lta)                                                                                                              \
@@ -149,7 +148,7 @@ static void toyota_rx_hook(const CANPacket_t *msg) {
     }
 
     // wrap lateral controls on main
-    if (addr == 0x1D3) {
+    if (msg->addr == 0x1D3U) {
       // ACC main switch on is a prerequisite to enter controls, exit controls immediately on main switch off
       // Signal: PCM_CRUISE_2/MAIN_ON at 15th bit
       acc_main_on = GET_BIT(msg, 15U);
@@ -334,7 +333,7 @@ static bool toyota_tx_hook(const CANPacket_t *msg) {
     }
 
     // AleSato's automatic brakehold
-    if ((addr == 0x344) && (alternative_experience & ALT_EXP_ALLOW_AEB)) {
+    if ((msg->addr == 0x344U) && (alternative_experience & ALT_EXP_ALLOW_AEB)) {
       if (vehicle_moving || gas_pressed || !acc_main_on) {
         tx = false;
       }
