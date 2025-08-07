@@ -57,8 +57,8 @@ class CarState(CarStateBase):
     self.mem_params = Params("/dev/shm/params")
     # Steer always on stuff , Stolen from spektor56 and sunnyhaibin (Giants shoulders)
     # ret.madsEnabled = False
-    self.lkas_button = False
-    self.prev_lkas_button = False
+    self.my_lkas_button = False
+    self.prev_my_lkas_button = False
 
     # Change between chill/experimental mode using steering wheel
     self.ispressed_prev = False
@@ -205,12 +205,12 @@ class CarState(CarStateBase):
 
     if self.CP.carFingerprint != CAR.TOYOTA_PRIUS_V:
       self.lkas_hud = copy.copy(cp_cam.vl["LKAS_HUD"])
-      self.lkas_button = cp_cam.vl["LKAS_HUD"]["LKAS_STATUS"] != 0
-      if self.prev_lkas_button is None:
-        self.prev_lkas_button = self.lkas_button
-      if self.prev_lkas_button != self.lkas_button and not self.mem_params.get_bool("AleSato_SteerAlwaysOn") and ret.cruiseState.available:
+      self.my_lkas_button = cp_cam.vl["LKAS_HUD"]["LKAS_STATUS"] != 0
+      if self.prev_my_lkas_button is None:
+        self.prev_my_lkas_button = self.my_lkas_button
+      if self.prev_my_lkas_button != self.my_lkas_button and not self.mem_params.get_bool("AleSato_SteerAlwaysOn") and ret.cruiseState.available:
         self.mem_params.put_bool('AleSato_SteerAlwaysOn', True)
-      elif (self.prev_lkas_button != self.lkas_button and self.mem_params.get_bool("AleSato_SteerAlwaysOn")) or not ret.cruiseState.available:
+      elif (self.prev_my_lkas_button != self.my_lkas_button and self.mem_params.get_bool("AleSato_SteerAlwaysOn")) or not ret.cruiseState.available:
         self.mem_params.put_bool('AleSato_SteerAlwaysOn', False)
       if self.mem_params.get_bool("AleSato_SteerAlwaysOn"):
         ret.madsEnabled = True
@@ -218,7 +218,7 @@ class CarState(CarStateBase):
         ret.madsEnabled = False
       # not is a physical button, just a dash icon this ensures that MADS will not be disengaged in the middle of a turn
       ret.invalidLkasSetting = cp_cam.vl["LKAS_HUD"]["LDA_SA_TOGGLE"] == 1
-      self.prev_lkas_button = self.lkas_button
+      self.prev_my_lkas_button = self.my_lkas_button
 
     # Automatic BrakeHold
     if (self.CP.carFingerprint == CAR.TOYOTA_COROLLA_TSS2) and (not self.CP.flags & ToyotaFlags.SECOC.value):
