@@ -44,6 +44,7 @@ class CarState(CarStateBase):
     self.accurate_steer_angle_seen = False
     self.angle_offset = FirstOrderFilter(None, 60.0, DT_CTRL, initialized=False)
 
+    self.lkas_button = 0
     self.distance_button = 0
 
     self.pcm_follow_distance = 0
@@ -247,34 +248,46 @@ class CarState(CarStateBase):
     if self.CP.carFingerprint not in UNSUPPORTED_DSU_CAR:
       self.pcm_follow_distance = cp.vl["PCM_CRUISE_2"]["PCM_FOLLOW_DISTANCE"]
 
-    if self.CP.carFingerprint in (TSS2_CAR - RADAR_ACC_CAR):
-      # distance button is wired to the ACC module (camera or radar)
-      prev_distance_button = self.distance_button
-      if (self.CP.carFingerprint in SECOC_CAR) and (self.CP.carFingerprint not in RADAR_ACC_CAR):
-        self.customized_distance_button = cp.vl["PCM_CRUISE_4"]["DISTANCE"]
-      else:
-        self.customized_distance_button = cp_acc.vl["ACC_CONTROL"]["DISTANCE"]
+    buttonEvents = []
+    if self.CP.carFingerprint in TSS2_CAR:
+      # lkas button is wired to the camera
+      prev_lkas_button = self.lkas_button
+      self.lkas_button = cp_cam.vl["LKAS_HUD"]["LDA_ON_MESSAGE"]
 
-      # change follow distances with long press
-      if self.customized_distance_button:
-        self.short_press_button_counter += 1
-        if not self.distance_button:
-          self.gap_button_counter += 1
-          if self.gap_button_counter > 20:  # 20 milliseconds
-            self.gap_button_counter = 0
-            self.distance_button = True
-      else:
-        self.gap_button_counter = 0
-        self.distance_button = False
+      # Cycles between 1 and 2 when pressing the button, then rests back at 0 after ~3s
+      if self.lkas_button != 0 and self.lkas_button != prev_lkas_button:
+        buttonEvents.extend(create_button_events(1, 0, {1: ButtonType.lkas}) +
+                            create_button_events(0, 1, {1: ButtonType.lkas}))
 
-      # change experimental/chill mode on fly with short press
-      if not self.customized_distance_button and self.ispressed_prev and self.short_press_button_counter < 20:
-        self.params.put_bool_nonblocking('ExperimentalMode', not self.params.get_bool("ExperimentalMode"))
-      if not self.ispressed_prev and not self.customized_distance_button:
-        self.short_press_button_counter = 0
-      self.ispressed_prev = self.customized_distance_button
+      if self.CP.carFingerprint not in RADAR_ACC_CAR:
+        # distance button is wired to the ACC module (camera or radar)
+        prev_distance_button = self.distance_button
+        if (self.CP.carFingerprint in SECOC_CAR) and (self.CP.carFingerprint not in RADAR_ACC_CAR):
+          self.customized_distance_button = cp.vl["PCM_CRUISE_4"]["DISTANCE"]
+        else:
+          self.customized_distance_button = cp_acc.vl["ACC_CONTROL"]["DISTANCE"]
 
-      ret.buttonEvents = create_button_events(self.distance_button, prev_distance_button, {1: ButtonType.gapAdjustCruise})
+        # change follow distances with long press
+        if self.customized_distance_button:
+          self.short_press_button_counter += 1
+          if not self.distance_button:
+            self.gap_button_counter += 1
+            if self.gap_button_counter > 20:  # 20 milliseconds
+              self.gap_button_counter = 0
+              self.distance_button = True
+        else:
+          self.gap_button_counter = 0
+          self.distance_button = False
+
+        # change experimental/chill mode on fly with short press
+        if not self.customized_distance_button and self.ispressed_prev and self.short_press_button_counter < 20:
+          self.params.put_bool_nonblocking('ExperimentalMode', not self.params.get_bool("ExperimentalMode"))
+        if not self.ispressed_prev and not self.customized_distance_button:
+          self.short_press_button_counter = 0
+        self.ispressed_prev = self.customized_distance_button
+
+        buttonEvents += create_button_events(self.distance_button, prev_distance_button, {1: ButtonType.gapAdjustCruise})
+    ret.buttonEvents = buttonEvents
 
     return ret
 
