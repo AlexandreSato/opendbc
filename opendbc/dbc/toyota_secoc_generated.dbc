@@ -366,6 +366,9 @@ BO_ 1592 DOOR_LOCKS: 8 XXX
  SG_ LOCK_STATUS : 20|1@0+ (1,0) [0|1] "" XXX
  SG_ LOCKED_VIA_KEYFOB : 23|1@0+ (1,0) [0|1] "" XXX
 
+BO_ 2001 NEW_MSG_7D1: 8 XXX
+ SG_ NEW_SIGNAL_1 : 7|64@0+ (1,0) [0|1.84467440737096e+19] "" XXX
+
 CM_ SG_ 37 STEER_RATE "factor is tbd";
 CM_ SG_ 37 STEER_FRACTION "1/15th of the signal STEER_ANGLE, which is 1.5 deg; note that 0x8 is never set";
 CM_ SG_ 305 STEER_ANGLE_CMD "Used in place of STEERING_LTA.STEER_ANGLE_CMD on SecOC cars";

@@ -85,14 +85,12 @@ class CarController(CarControllerBase):
 
     self.packer = CANPacker(dbc_names[Bus.pt])
 
-
     # AleSato stuff
     self.remoteLockDoors = False
     self.lastRemoteLockDoors = False
     self.oneHonk = False
     self.twoHonks = False
     self.honk_rate_counter = 0
-
 
     self.reset_pcm_compensation = True
     self.secoc_lka_message_counter = 0
@@ -316,7 +314,7 @@ class CarController(CarControllerBase):
 
           # NO_STOP_TIMER_CAR will creep if compensation is applied when stopping or stopped, don't compensate when stopped or stopping
           should_compensate = True
-          if self.CP.carFingerprint in NO_STOP_TIMER_CAR and ((CS.out.vEgo <  1e-3 and actuators.accel < 1e-3) or stopping):
+          if self.CP.carFingerprint in NO_STOP_TIMER_CAR and ((CS.out.vEgo < 1e-3 and actuators.accel < 1e-3) or stopping):
             should_compensate = False
           if CC.longActive and should_compensate and not self.reset_pcm_compensation:
             accel_offset = CS.pcm_neutral_force / self.CP.mass
@@ -329,8 +327,8 @@ class CarController(CarControllerBase):
 
           # AleSato apply in a diff way the neutralForce compensation than Irene's (Cydia2020)
           accel_raw = -0.4 if stopping else actuators.accel if should_compensate else pcm_accel_cmd
-          can_sends.append(toyotacan.create_my_accel_command(self.packer, pcm_accel_cmd, accel_raw, stopping, pcm_cancel_cmd, self.standstill_req, \
-                                                          lead, CS.acc_type, self.distance_button, fcw_alert))
+          can_sends.append(toyotacan.create_my_accel_command(self.packer, pcm_accel_cmd, accel_raw, stopping, pcm_cancel_cmd, self.standstill_req,
+                                                             lead, CS.acc_type, self.distance_button, fcw_alert))
         else:
           can_sends.append(toyotacan.create_accel_command(self.packer, pcm_accel_cmd, pcm_cancel_cmd, self.permit_braking, self.standstill_req, lead,
                                                           CS.acc_type, fcw_alert, self.distance_button))
