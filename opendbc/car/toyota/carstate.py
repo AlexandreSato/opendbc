@@ -2,6 +2,7 @@ import copy
 
 from opendbc.can import CANDefine, CANParser
 from opendbc.car import Bus, DT_CTRL, create_button_events, structs
+from opendbc.car import CanBusBase
 from opendbc.car.common.conversions import Conversions as CV
 from opendbc.car.common.filter_simple import FirstOrderFilter
 from opendbc.car.interfaces import CarStateBase
@@ -206,7 +207,13 @@ class CarState(CarStateBase):
       ("BLINKERS_STATE", float('nan')),
     ]
 
+    # Compute bus offset from number of safetyConfigs so multipanda setups
+    # (internal + external pandas) map DBCs to the correct physical bus.
+    can_base = CanBusBase(CP, None)
+    main_bus = can_base.offset
+    cam_bus = can_base.offset + 2
+
     return {
-      Bus.pt: CANParser(DBC[CP.carFingerprint][Bus.pt], pt_messages, 0),
-      Bus.cam: CANParser(DBC[CP.carFingerprint][Bus.pt], [], 2),
+      Bus.pt: CANParser(DBC[CP.carFingerprint][Bus.pt], pt_messages, main_bus),
+      Bus.cam: CANParser(DBC[CP.carFingerprint][Bus.pt], [], cam_bus),
     }

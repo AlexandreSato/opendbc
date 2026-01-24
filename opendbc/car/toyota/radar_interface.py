@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 from opendbc.can import CANParser
-from opendbc.car import Bus
+from opendbc.car import Bus, CanBusBase
 from opendbc.car.structs import RadarData
 from opendbc.car.toyota.values import DBC, TSS2_CAR
 from opendbc.car.interfaces import RadarInterfaceBase
 
 
-def _create_radar_can_parser(car_fingerprint):
+def _create_radar_can_parser(car_fingerprint, CP):
   if car_fingerprint in TSS2_CAR:
     RADAR_A_MSGS = list(range(0x180, 0x190))
     RADAR_B_MSGS = list(range(0x190, 0x1a0))
@@ -18,7 +18,11 @@ def _create_radar_can_parser(car_fingerprint):
   msg_b_n = len(RADAR_B_MSGS)
   messages = list(zip(RADAR_A_MSGS + RADAR_B_MSGS, [20] * (msg_a_n + msg_b_n), strict=True))
 
-  return CANParser(DBC[car_fingerprint][Bus.radar], messages, 1)
+  # Compute bus offset based on safetyConfigs so multipanda setups read radar from correct bus
+  can_base = CanBusBase(CP, None)
+  radar_bus = can_base.offset + 1
+
+  return CANParser(DBC[car_fingerprint][Bus.radar], messages, radar_bus)
 
 
 class RadarInterface(RadarInterfaceBase):
@@ -35,7 +39,7 @@ class RadarInterface(RadarInterfaceBase):
 
     self.valid_cnt = {key: 0 for key in self.RADAR_A_MSGS}
 
-    self.rcp = None if CP.radarUnavailable else _create_radar_can_parser(CP.carFingerprint)
+    self.rcp = None if CP.radarUnavailable else _create_radar_can_parser(CP.carFingerprint, CP)
     self.trigger_msg = self.RADAR_B_MSGS[-1]
     self.updated_messages = set()
 

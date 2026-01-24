@@ -1,4 +1,4 @@
-from opendbc.car import Bus, structs, get_safety_config, uds
+from opendbc.car import Bus, structs, get_safety_config, uds, CanBusBase
 from opendbc.car.toyota.carstate import CarState
 from opendbc.car.toyota.carcontroller import CarController
 from opendbc.car.toyota.radar_interface import RadarInterface
@@ -23,21 +23,30 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   def _get_params(ret: structs.CarParams, candidate, fingerprint, car_fw, alpha_long, is_release, docs) -> structs.CarParams:
     ret.brand = "toyota"
-    ret.safetyConfigs = [get_safety_config(structs.CarParams.SafetyModel.toyota)]
-    ret.safetyConfigs[0].safetyParam = EPS_SCALE[candidate]
+    cfgs = [get_safety_config(structs.CarParams.SafetyModel.toyota)]
+    cfgs[-1].safetyParam = EPS_SCALE[candidate]
+
+    # If multipanda mapping is detected (offset >= 4), keep the first safety slot
+    # as `noOutput` so an internal panda remains silent and the vehicle safety config
+    # stays as the last entry (`-1`). This mirrors Ford's behavior for external pandas.
+    CAN = CanBusBase(None, fingerprint)
+    if CAN.offset >= 4:
+      cfgs.insert(0, get_safety_config(structs.CarParams.SafetyModel.noOutput))
+
+    ret.safetyConfigs = cfgs
 
     # BRAKE_MODULE is on a different address for these cars
     if DBC[candidate][Bus.pt] == "toyota_new_mc_pt_generated":
-      ret.safetyConfigs[0].safetyParam |= ToyotaSafetyFlags.ALT_BRAKE.value
+      ret.safetyConfigs[-1].safetyParam |= ToyotaSafetyFlags.ALT_BRAKE.value
 
     if ret.flags & ToyotaFlags.SECOC.value:
       ret.secOcRequired = True
-      ret.safetyConfigs[0].safetyParam |= ToyotaSafetyFlags.SECOC.value
+      ret.safetyConfigs[-1].safetyParam |= ToyotaSafetyFlags.SECOC.value
       ret.dashcamOnly = is_release
 
     if candidate in ANGLE_CONTROL_CAR:
       ret.steerControlType = SteerControlType.angle
-      ret.safetyConfigs[0].safetyParam |= ToyotaSafetyFlags.LTA.value
+      ret.safetyConfigs[-1].safetyParam |= ToyotaSafetyFlags.LTA.value
 
       # LTA control can be more delayed and winds up more often
       ret.steerActuatorDelay = 0.18
@@ -134,7 +143,7 @@ class CarInterface(CarInterfaceBase):
     ret.autoResumeSng = ret.openpilotLongitudinalControl and candidate in NO_STOP_TIMER_CAR
 
     if not ret.openpilotLongitudinalControl:
-      ret.safetyConfigs[0].safetyParam |= ToyotaSafetyFlags.STOCK_LONGITUDINAL.value
+      ret.safetyConfigs[-1].safetyParam |= ToyotaSafetyFlags.STOCK_LONGITUDINAL.value
 
     # min speed to enable ACC. if car can do stop and go, then set enabling speed
     # to a negative value, so it won't matter.
