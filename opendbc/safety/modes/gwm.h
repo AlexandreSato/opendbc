@@ -87,22 +87,28 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
       UPDATE_VEHICLE_SPEED(speed);
     }
 
-    if (msg->addr == GWM_BRAKE) {
-      brake_pressed = ((msg->data[25] << 8) | (msg->data[26] & 0xF8U)) > 0U;
+    if (msg->addr == GWM_STEERING_AND_CRUISE) {
+      brake_pressed = GET_BIT(msg, 46U);
+
+      // state machine to enter and exit controls for button enabling
+      bool cruise_button = GET_BIT(msg, 47U);
+      // enter controls on the rising edge of set or resume
+      if (cruise_button && !cruise_button_prev) {
+        acc_main_on = true;
+      }
+      // exit controls once cancel is pressed
+      bool cancel_button = GET_BIT(msg, 46U);
+      if (cancel_button) {
+        acc_main_on = false;
+      }
+      pcm_cruise_check(acc_main_on);
+      cruise_button_prev =  cruise_button ? 1 : 0;
     }
 
     if (msg->addr == 0x147U) {
       int torque_meas_new = ((msg->data[13] & 0x7U) << 8) | (msg->data[14]);
       torque_meas_new = to_signed(torque_meas_new, 11) + 548;
       update_sample(&torque_meas, torque_meas_new);
-    }
-  }
-
-  if (msg->bus == 2U) {
-    if (msg->addr == 0x23DU) {
-      int cruise_state = (msg->data[18] >> 3) & 0x1FU;
-      bool cruise_engaged = cruise_state > 4;
-      pcm_cruise_check(cruise_engaged);
     }
   }
 }

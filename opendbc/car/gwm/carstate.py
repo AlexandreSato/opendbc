@@ -15,6 +15,9 @@ class CarState(CarStateBase):
     self.steer_and_ap_stalk_msg = {}
     self.eps_stock_values = {}
     self.camera_stock_values = {}
+    self.main_on = False
+    self.main_on_activation_counter = 0
+    self.frame = 0
 
   def update(self, can_parsers) -> structs.CarState:
     cp = can_parsers[Bus.main]
@@ -35,9 +38,9 @@ class CarState(CarStateBase):
     )
 
     ret.standstill = abs(ret.vEgoRaw) < 1e-3
-    ret.gasPressed = cp.vl["CAR_OVERALL_SIGNALS2"]["GAS_POSITION"] > 10
+    ret.gasPressed = cp.vl["CAR_OVERALL_SIGNALS2"]["GAS_POSITION"] > 0
     ret.brake = cp.vl["BRAKE"]["BRAKE_PRESSURE"]
-    ret.brakePressed = cp.vl["BRAKE"]["BRAKE_PRESSURE"] > 40
+    ret.brakePressed = bool(cp.vl["STEER_AND_AP_STALK"]["AP_CANCEL_COMMAND"])
     ret.parkingBrake = cp.vl["CAR_OVERALL_SIGNALS"]["DRIVE_MODE"] == 0
 
     ret.gearShifter = GearShifter.drive if int(cp.vl["CAR_OVERALL_SIGNALS"]["DRIVE_MODE"]) == 1 else \
@@ -61,8 +64,16 @@ class CarState(CarStateBase):
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["LIGHTS"]["LEFT_TURN_SIGNAL"],
                                                                       cp.vl["LIGHTS"]["RIGHT_TURN_SIGNAL"])
 
-    ret.cruiseState.available = bool(cp_cam.vl["ACC_CMD"]["CRUISE_STATE"] > 0)
-    ret.cruiseState.enabled = bool(cp_cam.vl["ACC_CMD"]["CRUISE_STATE"] > 4)
+    if cp.vl["STEER_AND_AP_STALK"]["AP_CANCEL_COMMAND"]:
+      self.main_on = False
+    if cp.vl["STEER_AND_AP_STALK"]["AP_ENABLE_COMMAND"] and not self.main_on:
+      if self.frame - self.main_on_activation_counter < 1000:
+        self.main_on = True
+      self.main_on_activation_counter = self.frame
+    self.frame += 1
+
+    ret.cruiseState.available = self.main_on
+    ret.cruiseState.enabled = self.main_on
     return ret
 
   @staticmethod
