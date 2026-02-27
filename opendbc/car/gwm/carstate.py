@@ -67,7 +67,7 @@ class CarState(CarStateBase):
     if cp.vl["STEER_AND_AP_STALK"]["AP_CANCEL_COMMAND"]:
       self.main_on = False
     if cp.vl["STEER_AND_AP_STALK"]["AP_ENABLE_COMMAND"] and not self.main_on:
-      if self.frame - self.main_on_activation_counter < 1000:
+      if self.frame - self.main_on_activation_counter < 100:
         self.main_on = True
       self.main_on_activation_counter = self.frame
     self.frame += 1
