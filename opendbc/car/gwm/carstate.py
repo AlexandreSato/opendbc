@@ -15,6 +15,8 @@ class CarState(CarStateBase):
     self.steer_and_ap_stalk_msg = {}
     self.eps_stock_values = {}
     self.camera_stock_values = {}
+    self.is_activation_lever_pulled = False
+    self.prev_activation_lever_pulled = False
     self.main_on = False
     self.main_on_activation_counter = 0
     self.frame = 0
@@ -38,7 +40,7 @@ class CarState(CarStateBase):
     )
 
     ret.standstill = abs(ret.vEgoRaw) < 1e-3
-    ret.gasPressed = cp.vl["CAR_OVERALL_SIGNALS2"]["GAS_POSITION"] > 0
+    ret.gasPressed = False #cp.vl["CAR_OVERALL_SIGNALS2"]["GAS_POSITION"] > 0
     ret.brake = cp.vl["BRAKE"]["BRAKE_PRESSURE"]
     ret.brakePressed = bool(cp.vl["STEER_AND_AP_STALK"]["AP_CANCEL_COMMAND"])
     ret.parkingBrake = cp.vl["CAR_OVERALL_SIGNALS"]["DRIVE_MODE"] == 0
@@ -66,10 +68,12 @@ class CarState(CarStateBase):
 
     if cp.vl["STEER_AND_AP_STALK"]["AP_CANCEL_COMMAND"]:
       self.main_on = False
-    if cp.vl["STEER_AND_AP_STALK"]["AP_ENABLE_COMMAND"] and not self.main_on:
+    self.is_activation_lever_pulled = bool(cp.vl["STEER_AND_AP_STALK"]["AP_ENABLE_COMMAND"])
+    if not self.is_activation_lever_pulled and self.prev_activation_lever_pulled and not self.main_on:
       if self.frame - self.main_on_activation_counter < 100:
         self.main_on = True
       self.main_on_activation_counter = self.frame
+    self.prev_activation_lever_pulled = self.is_activation_lever_pulled
     self.frame += 1
 
     ret.cruiseState.available = self.main_on
