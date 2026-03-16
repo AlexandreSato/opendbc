@@ -26,7 +26,8 @@ class CarInterface(CarInterfaceBase):
     self.steer_fault_temporary_counter = (self.steer_fault_temporary_counter + 1) if (self.lat_active and not self.isEPSobeying) \
                                           else 0
     ret = super().update(can_packets)
-    ret.steerFaultTemporary = True if self.steer_fault_temporary_counter > 100 else False
+    ret.steerFaultTemporary |= self.steer_fault_temporary_counter > 100
+
     return ret
 
   @staticmethod
@@ -46,7 +47,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.dashcamOnly = False
 
-    ret.steerActuatorDelay = 0.1
+    ret.steerActuatorDelay = 0.15
     ret.steerLimitTimer = 0.4
     ret.steerAtStandstill = True
 

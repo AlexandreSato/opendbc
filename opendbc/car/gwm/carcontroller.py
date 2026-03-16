@@ -48,9 +48,11 @@ class CarController(CarControllerBase):
       # Steer command
       new_torque = int(round(actuators.torque * self.params.STEER_MAX))
       apply_torque = apply_meas_steer_torque_limits(new_torque, self.apply_torque_last, CS.out.steeringTorqueEps, self.params)
+      # Prevent sending the same 'apply_torque = 1' torque repeatedly, as it can cause EPS faults.
+      if abs(apply_torque) == 1:
+        apply_torque = 2 if apply_torque > 0 else -2
       if not lat_active:
         apply_torque = 0
-      self.apply_torque_last = apply_torque
       can_sends.append(gwmcan.create_steer_command(
         self.packer,
         self.CAN,
@@ -58,6 +60,7 @@ class CarController(CarControllerBase):
         steer=apply_torque,
         steer_req=lat_active,
       ))
+      self.apply_torque_last = apply_torque
 
     new_actuators = actuators.as_builder()
     new_actuators.torque = self.apply_torque_last / self.params.STEER_MAX
