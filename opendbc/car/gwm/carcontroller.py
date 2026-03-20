@@ -1,0 +1,69 @@
+from opendbc.can.packer import CANPacker
+from opendbc.car import Bus
+from opendbc.car.lateral import apply_meas_steer_torque_limits
+from opendbc.car.interfaces import CarControllerBase
+from opendbc.car.gwm import gwmcan
+from opendbc.car.gwm.values import CarControllerParams
+
+MAX_USER_TORQUE = 100  # 1.0 Nm
+HELLO = 25
+
+
+class CarController(CarControllerBase):
+  def __init__(self, dbc_names, CP):
+    super().__init__(dbc_names, CP)
+    self.params = CarControllerParams(self.CP)
+    self.packer = CANPacker(dbc_names[Bus.main])
+    self.apply_torque_last = 0
+    self.CAN = gwmcan.CanBus(CP)
+
+  def update(self, CC, CS, now_nanos):
+    can_sends = []
+    actuators = CC.actuators
+    lat_active = CC.latActive and abs(CS.out.steeringTorque) < MAX_USER_TORQUE
+
+    # Increment counter so cancel is prioritized even without openpilot longitudinal
+    if CC.cruiseControl.cancel:
+      counter = (CS.steer_and_ap_stalk_msg['COUNTER'] + 1) % 16
+      can_sends.append(gwmcan.create_steer_and_ap_stalk(
+        self.packer,
+        self.CAN,
+        counter,
+        CS.steer_and_ap_stalk_msg,
+        cancel_command=True,
+      ))
+
+    if self.frame % 2 == 0: # 50 Hz
+      # Try to satisfy steer nudge requests
+      ea_simulated_torque = CS.out.steeringTorque
+      if abs(ea_simulated_torque) < HELLO:
+        ea_simulated_torque = ea_simulated_torque + (HELLO if ea_simulated_torque >= 0 else -HELLO)
+      can_sends.append(gwmcan.create_eps_update(
+        self.packer,
+        self.CAN,
+        eps_stock_values=CS.eps_stock_values,
+        ea_simulated_torque=ea_simulated_torque,
+      ))
+
+      # Steer command
+      new_torque = int(round(actuators.torque * self.params.STEER_MAX))
+      apply_torque = apply_meas_steer_torque_limits(new_torque, self.apply_torque_last, CS.out.steeringTorqueEps, self.params)
+      # Prevent sending the same 'apply_torque = 1' torque repeatedly, as it can cause EPS faults.
+      if abs(apply_torque) == 1:
+        apply_torque = 2 if apply_torque > 0 else -2
+      if not lat_active:
+        apply_torque = 0
+      can_sends.append(gwmcan.create_steer_command(
+        self.packer,
+        self.CAN,
+        camera_stock_values=CS.camera_stock_values,
+        steer=apply_torque,
+        steer_req=lat_active,
+      ))
+      self.apply_torque_last = apply_torque
+
+    new_actuators = actuators.as_builder()
+    new_actuators.torque = self.apply_torque_last / self.params.STEER_MAX
+    new_actuators.torqueOutputCan = self.apply_torque_last
+    self.frame += 1
+    return new_actuators, can_sends
