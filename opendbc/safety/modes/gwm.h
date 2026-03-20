@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opendbc/safety/safety_declarations.h"
+#include "opendbc/safety/declarations.h"
 
 #define GWM_STEERING_AND_CRUISE 0xA1U  // RX from STEER_AND_AP_STALK
 #define GWM_GAS                 0x60U  // RX from CAR_OVERALL_SIGNALS
@@ -141,7 +141,7 @@ static bool gwm_tx_hook(const CANPacket_t *msg) {
 }
 
 static safety_config gwm_init(uint16_t param) {
-  UNUSED(param);
+  SAFETY_UNUSED(param);
   static const CanMsg GWM_TX_MSGS[] = {
     {GWM_LANE_KEEP_ASSIST, GWM_CAMERA_BUS, 8, .check_relay = false}, // Cancel command
     // {GWM_LANE_KEEP_ASSIST, GWM_CAMERA_BUS, 8, .check_relay = true}, // EPS steering
