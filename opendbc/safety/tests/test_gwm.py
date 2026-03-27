@@ -18,6 +18,11 @@ class TestGwm(common.CarSafetyTest):
   MAX_RT_DELTA = 100
   MAX_TORQUE_ERROR = 70
 
+  MIN_GAS = -10
+  MAX_GAS = 4577
+  INACTIVE_GAS = 0
+  MAX_BRAKE = 107
+
   def setUp(self):
     self.packer = CANPackerSafety("gwm_haval_h6_mk3_generated")
     self.safety = libsafety_py.libsafety
@@ -78,6 +83,14 @@ class TestGwm(common.CarSafetyTest):
     self._rx(self._user_brake_msg(1))
     self.assertFalse(self.safety.get_controls_allowed())
     self._rx(self._vehicle_moving_msg(0))
+
+  def _send_brake_msg(self, brake):
+    values = {"BRAKE_CMD": brake}
+    return self.packer.make_can_msg_safety("ACC_CMD", 0, values)
+
+  def _send_gas_msg(self, gas):
+    values = {"GAS_CMD": gas}
+    return self.packer.make_can_msg_safety("ACC_CMD", 0, values)
 
 
 if __name__ == "__main__":
