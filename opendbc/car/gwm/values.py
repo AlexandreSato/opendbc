@@ -2,9 +2,9 @@ from dataclasses import dataclass, field
 from enum import IntFlag
 
 from opendbc.car.structs import CarParams
-from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, uds
+from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms
 from opendbc.car.docs_definitions import CarDocs, CarHarness, CarParts
-from opendbc.car.fw_query_definitions import FwQueryConfig, Request, p16
+from opendbc.car.fw_query_definitions import FwQueryConfig, Request, StdQueries
 
 Ecu = CarParams.Ecu
 
@@ -44,31 +44,30 @@ class CAR(Platforms):
     CarSpecs(mass=2040, wheelbase=2.738, steerRatio=17.416),
   )
 
-
-GREATWALLMOTORS_VERSION_REQUEST_MULTI = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER]) + \
-  p16(uds.DATA_IDENTIFIER_TYPE.VEHICLE_MANUFACTURER_SPARE_PART_NUMBER) + \
-  p16(uds.DATA_IDENTIFIER_TYPE.VEHICLE_MANUFACTURER_ECU_SOFTWARE_VERSION_NUMBER) + \
-  p16(uds.DATA_IDENTIFIER_TYPE.APPLICATION_DATA_IDENTIFICATION)
-GREATWALLMOTORS_VERSION_RESPONSE = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER + 0x40])
-
 GREATWALLMOTORS_RX_OFFSET = 0x6a
 
 FW_QUERY_CONFIG = FwQueryConfig(
   requests=[request for bus, obd_multiplexing in [(1, True), (1, False), (0, False)] for request in [
     Request(
-      [GREATWALLMOTORS_VERSION_REQUEST_MULTI],
-      [GREATWALLMOTORS_VERSION_RESPONSE],
-      whitelist_ecus=[Ecu.engine],
+      [StdQueries.TESTER_PRESENT_REQUEST, StdQueries.MANUFACTURER_ECU_HARDWARE_NUMBER_REQUEST],
+      [StdQueries.TESTER_PRESENT_RESPONSE, StdQueries.MANUFACTURER_ECU_HARDWARE_NUMBER_RESPONSE],
+      whitelist_ecus=[Ecu.engine, Ecu.eps, Ecu.fwdCamera, Ecu.fwdRadar, Ecu.hvac],
       rx_offset=GREATWALLMOTORS_RX_OFFSET,
       bus=bus,
       obd_multiplexing=obd_multiplexing,
     ),
     Request(
-      [GREATWALLMOTORS_VERSION_REQUEST_MULTI],
-      [GREATWALLMOTORS_VERSION_RESPONSE],
-      whitelist_ecus=[Ecu.engine],
+      [StdQueries.TESTER_PRESENT_REQUEST, StdQueries.MANUFACTURER_ECU_HARDWARE_NUMBER_REQUEST],
+      [StdQueries.TESTER_PRESENT_RESPONSE, StdQueries.MANUFACTURER_ECU_HARDWARE_NUMBER_RESPONSE],
+      whitelist_ecus=[Ecu.engine, Ecu.eps, Ecu.fwdCamera, Ecu.fwdRadar, Ecu.hvac],
       bus=bus,
       obd_multiplexing=obd_multiplexing,
+    ),
+    Request(
+      [StdQueries.UDS_VERSION_REQUEST],
+      [StdQueries.UDS_VERSION_RESPONSE],
+      whitelist_ecus=[Ecu.engine, Ecu.eps, Ecu.fwdCamera, Ecu.fwdRadar, Ecu.hvac],
+      bus=bus,
     ),
   ]],
 )
