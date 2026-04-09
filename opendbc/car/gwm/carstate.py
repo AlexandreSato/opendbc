@@ -17,6 +17,7 @@ class CarState(CarStateBase):
     self.eps_stock_values = {}
     self.camera_stock_values = {}
     self.longitudinal_stock_values = {}
+    self.hud_stock_values = {}
 
     self.is_activation_lever_pulled = False
     self.prev_activation_lever_pulled = False
@@ -37,6 +38,7 @@ class CarState(CarStateBase):
     self.eps_stock_values = copy.copy(cp.vl["RX_STEER_RELATED"])
     self.camera_stock_values = copy.copy(cp_cam.vl["STEER_CMD"])
     self.longitudinal_stock_values = copy.copy(cp_cam.vl["ACC_CMD"])
+    self.hud_stock_values = copy.copy(cp_cam.vl["LATERAL_STATE"])
 
     self.parse_wheel_speeds(ret,
       cp.vl["WHEEL_SPEEDS"]["FRONT_LEFT_WHEEL_SPEED"],
@@ -72,7 +74,7 @@ class CarState(CarStateBase):
 
     ret.steeringTorque = cp.vl["RX_STEER_RELATED"]["B_RX_DRIVER_TORQUE"]
     ret.steeringTorqueEps = cp.vl["RX_STEER_RELATED"]["B_RX_EPS_TORQUE"]
-    ret.steeringPressed = abs(ret.steeringTorque) > 50
+    ret.steeringPressed = abs(ret.steeringTorque) > 100
 
     ret.doorOpen = any([cp.vl["DOOR_DRIVER"]["DOOR_REAR_RIGHT_OPEN"],
                         cp.vl["DOOR_DRIVER"]["DOOR_FRONT_RIGHT_OPEN"],

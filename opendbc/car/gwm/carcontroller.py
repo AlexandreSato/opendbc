@@ -8,7 +8,7 @@ from opendbc.car.gwm.values import CarControllerParams
 
 LongCtrlState = structs.CarControl.Actuators.LongControlState
 
-MAX_USER_TORQUE = 100  # 1.0 Nm
+MAX_USER_TORQUE = 200
 
 
 class CarController(CarControllerBase):
@@ -81,6 +81,15 @@ class CarController(CarControllerBase):
           active=CC.longActive,
           standstill=standstill,
         ))
+
+    if self.frame % 5 == 0: # 20 Hz
+      # HUD updates
+      can_sends.append(gwmcan.create_hud_command(
+        self.packer,
+        self.CAN,
+        hud_stock_values=CS.hud_stock_values,
+        steer_required=CC.latActive,
+      ))
 
     new_actuators = actuators.as_builder()
     new_actuators.torque = self.apply_torque_last / self.params.STEER_MAX
