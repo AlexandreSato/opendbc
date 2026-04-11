@@ -150,7 +150,7 @@ def create_hud_command(packer, CAN: CanBus, hud_stock_values, steer_required):
   ]}
 
   values |= {
-    "LATERAL_STATE": 5 if steer_required else 0,
+    "LKAS_STATE": 5 if steer_required else 0,
   }
 
   data = packer.make_can_msg("LATERAL_STATE", 0, values)[1]
