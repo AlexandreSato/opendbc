@@ -120,6 +120,11 @@ static bool gwm_tx_hook(const CANPacket_t *msg) {
     .max_torque_error = 80,
     .max_rt_delta = 100,
     .type = TorqueMotorLimited,
+
+    .min_valid_request_frames = 7,                                                    \
+    .max_invalid_request_frames = 1,                                                  \
+    .min_valid_request_rt_interval = 144000,  /* 10% tolerance */                     \
+    .has_steer_req_tolerance = true,
   };
 
   const LongitudinalLimits GWM_LONG_LIMITS = {

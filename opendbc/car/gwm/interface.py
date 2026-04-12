@@ -48,7 +48,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.dashcamOnly = False
 
-    ret.steerActuatorDelay = 0.15
+    ret.steerActuatorDelay = 0.25
     ret.steerLimitTimer = 0.4
     ret.steerAtStandstill = False
 
@@ -62,7 +62,7 @@ class CarInterface(CarInterfaceBase):
       ret.openpilotLongitudinalControl = True
       ret.safetyConfigs[-1].safetyParam |= GwmSafetyFlags.LONG_CONTROL.value
 
-      ret.longitudinalActuatorDelay = 0.15
+      ret.longitudinalActuatorDelay = 0.25
       ret.vEgoStopping = 0.2
       ret.vEgoStarting = 0.2
       ret.stopAccel = -0.75

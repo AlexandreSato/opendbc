@@ -1,7 +1,7 @@
 import numpy as np
 from opendbc.can.packer import CANPacker
 from opendbc.car import Bus, structs
-from opendbc.car.lateral import apply_meas_steer_torque_limits
+from opendbc.car.lateral import apply_meas_steer_torque_limits, common_fault_avoidance
 from opendbc.car.interfaces import CarControllerBase
 from opendbc.car.gwm import gwmcan
 from opendbc.car.gwm.values import CarControllerParams
@@ -19,6 +19,7 @@ class CarController(CarControllerBase):
     self.apply_torque_last = 0
     self.CAN = gwmcan.CanBus(CP)
     self.accel = 0.0
+    self.steer_rate_counter = 0
 
   def update(self, CC, CS, now_nanos):
     can_sends = []
@@ -45,12 +46,14 @@ class CarController(CarControllerBase):
         apply_torque = apply_torque * 2
       if not lat_active:
         apply_torque = 0
+      self.steer_rate_counter, apply_steer_req = common_fault_avoidance(((abs(apply_torque) > 150) and abs(CS.out.steeringRateDeg) < 0.5),
+                                                                        lat_active, self.steer_rate_counter, 7)
       can_sends.append(gwmcan.create_steer_command(
         self.packer,
         self.CAN,
         camera_stock_values=CS.camera_stock_values,
         steer=apply_torque,
-        steer_req=lat_active,
+        steer_req=apply_steer_req,
       ))
       self.apply_torque_last = apply_torque
 
