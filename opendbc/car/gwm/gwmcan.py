@@ -143,10 +143,14 @@ def create_buttons_command(packer, CAN: CanBus, counter, stock_msg, cancel_comma
 def create_hud_command(packer, CAN: CanBus, hud_stock_values, steer_required):
   values = {s: hud_stock_values[s] for s in [
     "BYPASSME_1",
+    "BYPASSME_2",
     "BY_PASSME",
     "CRUISE_STATE",
     "COUNTER",
-    "BYPASSME_2",
+    "BYPASSME_3",
+    "BYPASSME_4",
+    "BYPASSME_5",
+    "BYPASSME_6",
   ]}
 
   values |= {
