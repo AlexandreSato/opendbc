@@ -22,7 +22,7 @@ def checksum(msg):
 
 class TestGwm(common.PandaSafetyTest):
   TX_MSGS = [[0x12B, 0], [0x143, 0], [0x147, 2], [0xA1, 2]] # Steer, long, wheel touch, cancel
-  RELAY_MALFUNCTION_ADDRS = {0: (0x12B, 0x143), 2: (0x147)}
+  RELAY_MALFUNCTION_ADDRS = {0: (0x12B, 0x143), 2: (0x147,)}
   FWD_BLACKLISTED_ADDRS = {0: [0x147], 2: [0x12B]}
 
   MAX_RATE_UP = 4
@@ -69,11 +69,11 @@ class TestGwm(common.PandaSafetyTest):
     return self.packer.make_can_msg_panda("STEER_CMD", 0, values)
 
   def _send_brake_msg(self, brake):
-    values = {"BRAKE_CMD": brake}
+    values = {"BRAKE_CMD": -brake, "GAS_CMD": 0}
     return self.packer.make_can_msg_panda("ACC_CMD", 0, values)
 
   def _send_gas_msg(self, gas):
-    values = {"GAS_CMD": gas}
+    values = {"GAS_CMD": gas, "BRAKE_CMD": 0}
     return self.packer.make_can_msg_panda("ACC_CMD", 0, values)
 
   def test_rx_hook(self):
