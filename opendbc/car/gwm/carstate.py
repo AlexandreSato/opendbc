@@ -17,6 +17,7 @@ class CarState(CarStateBase):
     self.eps_stock_values = {}
     self.camera_stock_values = {}
     self.longitudinal_stock_values = {}
+    self.hud_stock_values = {}
 
     self.is_activation_lever_pulled = False
     self.prev_activation_lever_pulled = False
@@ -37,6 +38,7 @@ class CarState(CarStateBase):
     self.eps_stock_values = copy.copy(cp.vl["RX_STEER_RELATED"])
     self.camera_stock_values = copy.copy(cp_cam.vl["STEER_CMD"])
     self.longitudinal_stock_values = copy.copy(cp_cam.vl["ACC_CMD"])
+    self.hud_stock_values = copy.copy(cp_cam.vl["LATERAL_STATE"])
 
     self.parse_wheel_speeds(ret,
       cp.vl["WHEEL_SPEEDS"]["FRONT_LEFT_WHEEL_SPEED"],

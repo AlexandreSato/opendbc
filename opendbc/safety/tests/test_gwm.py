@@ -22,8 +22,8 @@ def checksum(msg):
 
 class TestGwm(common.PandaSafetyTest):
   TX_MSGS = [[0x12B, 0], [0x143, 0], [0x147, 2], [0xA1, 2]] # Steer, long, wheel touch, cancel
-  RELAY_MALFUNCTION_ADDRS = {0: (0x12B, 0x143), 2: (0x147,)}
-  FWD_BLACKLISTED_ADDRS = {0: [0x147], 2: [0x12B]}
+  RELAY_MALFUNCTION_ADDRS = {0: (0x12B, 0x143, 0x23D), 2: (0x147,)}
+  FWD_BLACKLISTED_ADDRS = {0: [0x147], 2: [0x12B, 0x23D]}
 
   MAX_RATE_UP = 4
   MAX_RATE_DOWN = 6
