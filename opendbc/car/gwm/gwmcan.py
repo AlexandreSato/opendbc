@@ -140,6 +140,29 @@ def create_buttons_command(packer, CAN: CanBus, counter, stock_msg, cancel_comma
   return packer.make_can_msg('STEER_AND_AP_STALK', CAN.camera, values)
 
 
+def create_hud_command(packer, CAN: CanBus, hud_stock_values, steer_required):
+  values = {s: hud_stock_values[s] for s in [
+    "BYPASSME_1",
+    "BYPASSME_2",
+    "BY_PASSME",
+    "CRUISE_STATE",
+    "COUNTER",
+    "BYPASSME_3",
+    "BYPASSME_4",
+    "BYPASSME_5",
+    "BYPASSME_6",
+  ]}
+
+  values |= {
+    "LKAS_STATE": 5 if steer_required else 0,
+  }
+
+  data = packer.make_can_msg("LATERAL_STATE", 0, values)[1]
+  values["CRC_X66"] = checksum(data[17:24], 0x66)
+
+  return packer.make_can_msg("LATERAL_STATE", CAN.main, values)
+
+
 def checksum(data, xor_output):
   crc = 0
   poly = 0x1D
