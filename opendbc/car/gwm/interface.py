@@ -68,6 +68,6 @@ class CarInterface(CarInterfaceBase):
       ret.stopAccel = -0.75
       ret.stoppingDecelRate = 0.75
       ret.longitudinalTuning.kiBP = [0.]
-      ret.longitudinalTuning.kiV = [0.65]
+      ret.longitudinalTuning.kiV = [0.4]
 
     return ret
