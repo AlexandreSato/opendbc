@@ -145,7 +145,6 @@ def create_hud_command(packer, CAN: CanBus, hud_stock_values, steer_required):
     "BYPASSME_1",
     "BYPASSME_2",
     "BY_PASSME",
-    "CRUISE_STATE",
     "COUNTER",
     "BYPASSME_3",
     "BYPASSME_4",
@@ -154,7 +153,8 @@ def create_hud_command(packer, CAN: CanBus, hud_stock_values, steer_required):
   ]}
 
   values |= {
-    "LKAS_STATE": 5 if steer_required else 0,
+    "LKAS_STATE": 5 if steer_required else hud_stock_values["LKAS_STATE"],
+    "CRUISE_STATE": 3 if steer_required else hud_stock_values["CRUISE_STATE"],
   }
 
   data = packer.make_can_msg("LATERAL_STATE", 0, values)[1]
