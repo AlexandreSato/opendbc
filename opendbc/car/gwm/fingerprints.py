@@ -10,4 +10,9 @@ FW_VERSIONS = {
       b'\xf1\x873612100XEC56000\xf1\x89S013A01XKN17002',
     ],
   },
+  CAR.GWM_HAVAL_JOLION_HEV: {
+    (Ecu.engine, 0x7e0, None): [
+      b'\xf1\x873612100XEG01H00\xf1\x89S013A01XST17008',
+    ],
+  }
 }
