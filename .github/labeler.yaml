@@ -37,7 +37,7 @@ gm:
 
 gwm:
   - changed-files:
-    - any-glob-to-any-file: 'opendbc/car/gm/**'
+    - any-glob-to-any-file: 'opendbc/car/gwm/**'
 
 honda:
   - changed-files:
