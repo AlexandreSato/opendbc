@@ -55,15 +55,16 @@ class CarController(CarControllerBase):
       self.apply_torque_last = apply_torque
 
       # Satisfy steer nudge requests
-      ea_simulated_torque = float(np.clip(apply_torque * 2, -self.params.STEER_MAX, self.params.STEER_MAX))
-      if abs(CS.out.steeringTorque) > abs(ea_simulated_torque):
-        ea_simulated_torque = CS.out.steeringTorque
-      can_sends.append(gwmcan.create_wheel_touch(
-        self.packer,
-        self.CAN,
-        eps_stock_values=CS.eps_stock_values,
-        ea_simulated_torque=ea_simulated_torque,
-      ))
+      if CC.latActive:
+        ea_simulated_torque = float(np.clip(apply_torque * 2, -self.params.STEER_MAX, self.params.STEER_MAX))
+        if abs(CS.out.steeringTorque) > abs(ea_simulated_torque):
+          ea_simulated_torque = CS.out.steeringTorque
+        can_sends.append(gwmcan.create_wheel_touch(
+          self.packer,
+          self.CAN,
+          eps_stock_values=CS.eps_stock_values,
+          ea_simulated_torque=ea_simulated_torque,
+        ))
 
       # Longitudinal control
       if self.CP.openpilotLongitudinalControl:

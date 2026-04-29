@@ -17,6 +17,10 @@
 #define GWM_MAIN_BUS 0U
 #define GWM_CAMERA_BUS  2U
 
+// Only rising edges while controls are not allowed are considered for these systems:
+static bool gwm_stock_lkas = false;
+static bool gwm_stock_lkas_prev = false;
+
 static uint8_t gwm_get_counter(const CANPacket_t *msg) {
   uint8_t cnt = 0;
   if ((msg->addr == GWM_SPEED) || (msg->addr == GWM_ADAS_ACTIVATION)) {
@@ -110,6 +114,20 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
       cruise_button_prev =  cruise_button ? 1 : 0;
     }
   }
+
+  if (msg->bus == GWM_CAMERA_BUS) {
+    if (msg->addr == GWM_STEER_CMD) {
+      bool gwm_stock_lkas_now = GET_BIT(msg, 125U);
+      // Only consider rising edges while controls are not allowed
+      if (gwm_stock_lkas_now && !gwm_stock_lkas_prev && !controls_allowed) {
+        gwm_stock_lkas = true;
+      }
+      if (!gwm_stock_lkas_now) {
+        gwm_stock_lkas = false;
+      }
+      gwm_stock_lkas_prev = gwm_stock_lkas_now;
+    }
+  }
 }
 
 static bool gwm_tx_hook(const CANPacket_t *msg) {
@@ -151,27 +169,48 @@ static bool gwm_tx_hook(const CANPacket_t *msg) {
     }
   }
 
+  if (gwm_stock_lkas) {
+    // Don't allow any steering commands when stock LKAS is active
+    violation = true;
+  }
+
   if (violation) {
     tx = false;
   }
   return tx;
 }
 
+static bool gwm_fwd_hook(int bus_num, int addr) {
+  bool block_msg = false;
+
+  if (bus_num == 2) {
+    // STEER_CMD
+    if ((addr == 0x12B) && !gwm_stock_lkas) {
+      block_msg = true;
+    }
+  }
+
+  return block_msg;
+}
+
 static safety_config gwm_init(uint16_t param) {
   static const CanMsg GWM_TX_MSGS[] = {
     {GWM_ADAS_ACTIVATION, GWM_CAMERA_BUS, 8, .check_relay = false}, // Cancel command
     {GWM_RX_STEER_RELATED, GWM_CAMERA_BUS, 64, .check_relay = true}, // EPS steering feedback to camera
-    {GWM_STEER_CMD, GWM_MAIN_BUS, 64, .check_relay = true}, // Steering command
+    {GWM_STEER_CMD, GWM_MAIN_BUS, 64, .check_relay = true, .disable_static_blocking = true}, // Steering command
     {GWM_HUD, GWM_MAIN_BUS, 64, .check_relay = true}, // HUD and dashboard
   };
 
   static const CanMsg GWM_LONG_TX_MSGS[] = {
     {GWM_ADAS_ACTIVATION, GWM_CAMERA_BUS, 8, .check_relay = false}, // Cancel command
     {GWM_RX_STEER_RELATED, GWM_CAMERA_BUS, 64, .check_relay = true}, // EPS steering feedback to camera
-    {GWM_STEER_CMD, GWM_MAIN_BUS, 64, .check_relay = true}, // Steering command
+    {GWM_STEER_CMD, GWM_MAIN_BUS, 64, .check_relay = true, .disable_static_blocking = true}, // Steering command
     {GWM_LONG_CONTROL, GWM_MAIN_BUS, 64, .check_relay = true}, // Longitudinal control message from camera
     {GWM_HUD, GWM_MAIN_BUS, 64, .check_relay = true}, // HUD and dashboard
   };
+
+  gwm_stock_lkas = false;
+  gwm_stock_lkas_prev = false;
 
   static RxCheck gwm_rx_checks[] = {
     {.msg = {{GWM_ADAS_ACTIVATION, GWM_MAIN_BUS, 8, 100U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // cruise state, steering angle, steer rate
@@ -205,6 +244,7 @@ const safety_hooks gwm_hooks = {
   .init = gwm_init,
   .rx = gwm_rx_hook,
   .tx = gwm_tx_hook,
+  .fwd = gwm_fwd_hook,
   .get_counter = gwm_get_counter,
   .get_checksum = gwm_get_checksum,
   .compute_checksum = gwm_compute_checksum,
