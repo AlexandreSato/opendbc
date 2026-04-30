@@ -5,7 +5,6 @@ from opendbc.car.interfaces import CarStateBase
 from opendbc.car.gwm.values import DBC
 import copy
 
-ButtonType = structs.CarState.ButtonEvent.Type
 GearShifter = structs.CarState.GearShifter
 TransmissionType = structs.CarParams.TransmissionType
 
@@ -29,10 +28,6 @@ class CarState(CarStateBase):
     cp = can_parsers[Bus.main]
     cp_cam = can_parsers[Bus.cam]
     ret = structs.CarState()
-
-    # prev_distance_button = self.distance_button
-    # self.distance_button = cp.vl["STEER_AND_AP_STALK"]["AP_REDUCE_DISTANCE_COMMAND"] or \
-    #                        cp.vl["STEER_AND_AP_STALK"]["AP_INCREASE_DISTANCE_COMMAND"]
 
     self.steer_and_ap_stalk_msg = copy.copy(cp.vl["STEER_AND_AP_STALK"])
     self.eps_stock_values = copy.copy(cp.vl["RX_STEER_RELATED"])
@@ -95,8 +90,6 @@ class CarState(CarStateBase):
 
     ret.cruiseState.available = self.main_on
     ret.cruiseState.enabled = self.main_on
-
-    # ret.buttonEvents = create_button_events(self.distance_button, prev_distance_button, {1: ButtonType.gapAdjustCruise})
 
     return ret
 
