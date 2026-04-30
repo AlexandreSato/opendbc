@@ -1,9 +1,10 @@
-from opendbc.car import structs, get_safety_config, CanBusBase, Bus
+from opendbc.car import structs, get_safety_config, CanBusBase, Bus, create_button_events
 from opendbc.car.interfaces import CarInterfaceBase
 from opendbc.car.gwm.carcontroller import CarController
 from opendbc.car.gwm.carstate import CarState
 from opendbc.car.gwm.values import GwmSafetyFlags
 
+ButtonType = structs.CarState.ButtonEvent.Type
 TransmissionType = structs.CarParams.TransmissionType
 
 
@@ -16,9 +17,13 @@ class CarInterface(CarInterfaceBase):
       self.lat_active = False
       self.isEPSobeying = True
       self.steer_fault_temporary_counter = 0
+      self.current_personality = 0
+      self.pcm_follow_distance = 0
 
   def apply(self, CC, now_nanos):
     self.lat_active = CC.latActive
+    hud_control = CC.hudControl
+    self.current_personality = hud_control.leadDistanceBars
     return super().apply(CC, now_nanos)
 
   def update(self, can_packets):
@@ -26,8 +31,16 @@ class CarInterface(CarInterfaceBase):
     self.isEPSobeying = cp.vl["RX_STEER_RELATED"]["A_RX_STEER_REQUESTED"] == 1
     self.steer_fault_temporary_counter = (self.steer_fault_temporary_counter + 1) if (self.lat_active and not self.isEPSobeying) \
                                           else 0
+
+    cp_cam = self.can_parsers[Bus.cam]
+    self.pcm_follow_distance = cp_cam.vl["ACC"]["CAR_DISTANCE_SELECTION"]
+
     ret = super().update(can_packets)
     ret.steerFaultTemporary |= self.steer_fault_temporary_counter > 100
+    if (self.pcm_follow_distance == 4 and self.current_personality != 3) or \
+       (self.pcm_follow_distance == 2 and self.current_personality != 2) or \
+       (self.pcm_follow_distance == 1 and self.current_personality != 1):
+      ret.buttonEvents = create_button_events(True, False, {1: ButtonType.gapAdjustCruise})
 
     return ret
 

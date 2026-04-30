@@ -125,11 +125,11 @@ def create_buttons_command(packer, CAN: CanBus, counter, stock_msg, cancel_comma
     "AP_ENABLE_COMMAND",
     "AP_DECREASE_SPEED_COMMAND",
     "AP_INCREASE_SPEED_COMMAND",
+    "AP_REDUCE_DISTANCE_COMMAND",
+    "AP_INCREASE_DISTANCE_COMMAND",
   ]}
 
   values |= {
-    "AP_REDUCE_DISTANCE_COMMAND": 0,
-    "AP_INCREASE_DISTANCE_COMMAND": 0,
     "AP_CANCEL_COMMAND":  stock_msg["AP_CANCEL_COMMAND"] or cancel_command,
     "COUNTER": counter,
   }
