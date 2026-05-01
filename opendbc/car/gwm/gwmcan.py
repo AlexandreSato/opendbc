@@ -27,8 +27,9 @@ def create_steer_command(packer, CAN: CanBus, camera_stock_values, steer: float,
     "TORQUE_CMD": steer,
     "TORQUE_REFLECTED": -steer,
     "INVERT_DIRECTION": 1 if (steer > 0 and steer_req) else 0,
-    "COUNTER": (camera_stock_values["COUNTER"] + 1) % 16,
+    "COUNTER": (camera_stock_values["COUNTER"] + 2) % 16,
     "BYPASS_ME": camera_stock_values["BYPASS_ME"],
+    "COUNTER_X34": (camera_stock_values["COUNTER_X34"] + 2) % 16,
   }
 
   # calculate and insert basic checksum
@@ -37,6 +38,7 @@ def create_steer_command(packer, CAN: CanBus, camera_stock_values, steer: float,
   # calculate and insert CRC
   dat = packer.make_can_msg("STEER_CMD", 0, values)[1]
   values["CRC_X9B"] = checksum(dat[9:16], 0x9B)
+  values["CRC_X34"] = checksum(dat[17:24], 0x34)
 
   return packer.make_can_msg("STEER_CMD", CAN.main, values)
 
