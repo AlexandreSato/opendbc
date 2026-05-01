@@ -127,11 +127,11 @@ def create_buttons_command(packer, CAN: CanBus, counter, stock_msg, cancel_comma
     "AP_ENABLE_COMMAND",
     "AP_DECREASE_SPEED_COMMAND",
     "AP_INCREASE_SPEED_COMMAND",
+    "AP_REDUCE_DISTANCE_COMMAND",
+    "AP_INCREASE_DISTANCE_COMMAND",
   ]}
 
   values |= {
-    "AP_REDUCE_DISTANCE_COMMAND": 0,
-    "AP_INCREASE_DISTANCE_COMMAND": 0,
     "AP_CANCEL_COMMAND":  stock_msg["AP_CANCEL_COMMAND"] or cancel_command,
     "COUNTER": counter,
   }
@@ -152,11 +152,11 @@ def create_hud_command(packer, CAN: CanBus, hud_stock_values, steer_required):
     "BYPASSME_4",
     "BYPASSME_5",
     "BYPASSME_6",
+    "CRUISE_STATE",
   ]}
 
   values |= {
     "LKAS_STATE": 5 if steer_required else hud_stock_values["LKAS_STATE"],
-    "CRUISE_STATE": 3 if steer_required else hud_stock_values["CRUISE_STATE"],
   }
 
   data = packer.make_can_msg("LATERAL_STATE", 0, values)[1]
