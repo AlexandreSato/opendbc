@@ -6,7 +6,7 @@
 #define GWM_GAS                  0x60U // RX from CAR_OVERALL_SIGNALS
 #define GWM_BRAKE               0x120U // RX from BRAKE2
 #define GWM_SPEED               0x13BU // RX from WHEEL_SPEEDS
-#define GWM_RX_STEER_RELATED    0x147U // RX from EPS to CAMERA
+#define GWM_RX_STEER_RELATED    0x162U // RX from EPS to CAMERA
 #define GWM_STEER_CMD           0x12BU // TX from OP to EPS
 #define GWM_CRUISE              0x2ABU
 #define GWM_LONG_CONTROL        0x143U // TX from OP to PCM
@@ -85,7 +85,7 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
     }
 
     if (msg->addr == GWM_RX_STEER_RELATED) {
-      int torque_meas_new = ((msg->data[13] & 0x7U) << 8) | (msg->data[14]);
+      int torque_meas_new = ((msg->data[6] & 0x7U) << 8) | (msg->data[7]);
       torque_meas_new = to_signed(torque_meas_new, 11) + 548;
       update_sample(&torque_meas, torque_meas_new);
 
@@ -160,14 +160,14 @@ static bool gwm_tx_hook(const CANPacket_t *msg) {
 static safety_config gwm_init(uint16_t param) {
   static const CanMsg GWM_TX_MSGS[] = {
     {GWM_ADAS_ACTIVATION, GWM_CAMERA_BUS, 8, .check_relay = false}, // Cancel command
-    {GWM_RX_STEER_RELATED, GWM_CAMERA_BUS, 64, .check_relay = true}, // EPS steering feedback to camera
+    {GWM_RX_STEER_RELATED, GWM_CAMERA_BUS, 8, .check_relay = true}, // EPS steering feedback to camera
     {GWM_STEER_CMD, GWM_MAIN_BUS, 64, .check_relay = true}, // Steering command
     {GWM_HUD, GWM_MAIN_BUS, 64, .check_relay = true}, // HUD and dashboard
   };
 
   static const CanMsg GWM_LONG_TX_MSGS[] = {
     {GWM_ADAS_ACTIVATION, GWM_CAMERA_BUS, 8, .check_relay = false}, // Cancel command
-    {GWM_RX_STEER_RELATED, GWM_CAMERA_BUS, 64, .check_relay = true}, // EPS steering feedback to camera
+    {GWM_RX_STEER_RELATED, GWM_CAMERA_BUS, 8, .check_relay = true}, // EPS steering feedback to camera
     {GWM_STEER_CMD, GWM_MAIN_BUS, 64, .check_relay = true}, // Steering command
     {GWM_LONG_CONTROL, GWM_MAIN_BUS, 64, .check_relay = true}, // Longitudinal control message from camera
     {GWM_HUD, GWM_MAIN_BUS, 64, .check_relay = true}, // HUD and dashboard
@@ -178,7 +178,7 @@ static safety_config gwm_init(uint16_t param) {
     {.msg = {{GWM_SPEED, GWM_MAIN_BUS, 64, 50U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // speed
     {.msg = {{GWM_GAS, GWM_MAIN_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},   // gas pedal
     {.msg = {{GWM_BRAKE, GWM_MAIN_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // brake2
-    {.msg = {{GWM_RX_STEER_RELATED, GWM_MAIN_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // eps feedback to camera
+    {.msg = {{GWM_RX_STEER_RELATED, GWM_MAIN_BUS, 8, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // eps feedback to camera
     {.msg = {{GWM_STEER_CMD, GWM_CAMERA_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // copy stock steering cmd
     {.msg = {{GWM_CRUISE, GWM_CAMERA_BUS, 64, 10U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // CRUISE_STATE, ACC
     {.msg = {{GWM_LONG_CONTROL, GWM_CAMERA_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // Longitudinal control message from camera

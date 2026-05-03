@@ -148,6 +148,15 @@ BO_ 327 RX_STEER_RELATED: 64 XXX
 BO_ 347 FRONT_BUMPER: 64 XXX
  SG_ CENTRAL_DIST : 95|7@0- (1,0) [0|127] "" XXX
 
+BO_ 354 RX_FROM_EPS_162: 8 XXX
+ SG_ CRC_X61 : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ RX_DRIVER_TORQUE : 11|8@0- (1,0) [0|4095] "" XXX
+ SG_ RX_DRIVER_TORQUE_DIRECTION : 15|4@0+ (1,0) [0|15] "" XXX
+ SG_ RX_EPS_TORQUE : 42|11@0- (1,548) [0|2047] "" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+ SG_ RX_EPS_APPLYING_TORQUE : 60|1@0+ (1,0) [0|15] "" XXX
+ SG_ SET_ME_X01 : 63|1@0+ (1,0) [0|1] "" XXX
+
 BO_ 357 NEW_MSG_165: 8 XXX
 
 BO_ 367 RADAR_BEHIND: 64 XXX
@@ -299,5 +308,6 @@ VAL_ 161 RATE_DIRECTION 1 "clockwise" 2 "clockwise" 3 "clockwise";
 VAL_ 323 BRAKE_OR_GAS_REQ 12 "GAS_REQ" 13 "BRAKE_REQ";
 VAL_ 323 STANDSTILL_2 3 "active" 4 "inactive";
 VAL_ 323 STANDSTILL_3 0 "active" 1 "inactive";
+VAL_ 354 RX_DRIVER_TORQUE_DIRECTION 7 "clockwise right" 8 "counterclockwise left";
 VAL_ 573 LKAS_STATE 5 "active" 2 "require_hands_on_steer" 3 "drift_out_left" 4 "drift_out_right";
 VAL_ 683 CRUISE_STATE_2 0 "deactivated" 1 "deactivated" 2 "deactivated" 3 "activated" 4 "activated" 5 "activated" 6 "activated" 7 "activated";

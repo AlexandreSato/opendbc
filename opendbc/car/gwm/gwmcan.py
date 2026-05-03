@@ -91,29 +91,24 @@ def create_longitudinal_command(packer, CAN, longitudinal_stock_values, accel, a
 
 def create_wheel_touch(packer, CAN: CanBus, eps_stock_values, ea_simulated_torque: float):
   values = {s: eps_stock_values[s] for s in [
-    "A_CRC_X61",
-    "A_BYPASSME_2",
-    "A_RX_STEER_REQUESTED",
-    "A_BYPASSME_1",
-    "A_COUNTER",
-    "B_CRC_X61",
-    "B_RX_DRIVER_TORQUE",
-    "B_BYPASSME_1",
-    "B_BYPASSME_2",
-    "B_RX_EPS_TORQUE",
-    "B_COUNTER",
-    "B_BYPASSME_3",
+    "CRC_X61",
+    "RX_DRIVER_TORQUE",
+    "RX_DRIVER_TORQUE_DIRECTION",
+    "RX_EPS_TORQUE",
+    "COUNTER",
+    "RX_EPS_APPLYING_TORQUE",
+    "SET_ME_X01",
   ]}
 
   values.update({
-    "B_RX_DRIVER_TORQUE": ea_simulated_torque,
+    "RX_DRIVER_TORQUE": ea_simulated_torque,
   })
 
   # calculate checksum
-  dat = packer.make_can_msg("RX_STEER_RELATED", 0, values)[1]
-  values["B_CRC_X61"] = checksum(dat[9:16], 0x61)
+  dat = packer.make_can_msg("RX_FROM_EPS_162", 0, values)[1]
+  values["B_CRC_X61"] = checksum(dat[1:8], 0x61)
 
-  return packer.make_can_msg("RX_STEER_RELATED", CAN.camera, values)
+  return packer.make_can_msg("RX_FROM_EPS_162", CAN.camera, values)
 
 
 def create_buttons_command(packer, CAN: CanBus, counter, stock_msg, cancel_command=False):

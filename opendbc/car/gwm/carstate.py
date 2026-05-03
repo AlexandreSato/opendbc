@@ -29,7 +29,7 @@ class CarState(CarStateBase):
     ret = structs.CarState()
 
     self.steer_and_ap_stalk_msg = copy.copy(cp.vl["STEER_AND_AP_STALK"])
-    self.eps_stock_values = copy.copy(cp.vl["RX_STEER_RELATED"])
+    self.eps_stock_values = copy.copy(cp.vl["RX_FROM_EPS_162"])
     self.camera_stock_values = copy.copy(cp_cam.vl["STEER_CMD"])
     self.longitudinal_stock_values = copy.copy(cp_cam.vl["ACC_CMD"])
     self.hud_stock_values = copy.copy(cp_cam.vl["LATERAL_STATE"])
@@ -62,12 +62,12 @@ class CarState(CarStateBase):
 
     # Since loopback was throwing a CanError even though the logic expected cp_loopback.vl_vall > 0, I moved the detection to interface.py against lat_active.
     ret.steerFaultTemporary = False # (bool(cp_loopback.vl["STEER_CMD"]["STEER_REQUEST"]) and bool(cp.vl["RX_STEER_RELATED"]["A_RX_STEER_REQUESTED"] != 1))
-    self.steer_fault_temporary_counter = (self.steer_fault_temporary_counter + 1) if (cp.vl["RX_STEER_RELATED"]["EPS_FAULT_PERMANENT"] == 1) else 0
+    # self.steer_fault_temporary_counter = (self.steer_fault_temporary_counter + 1) if (cp.vl["RX_STEER_RELATED"]["EPS_FAULT_PERMANENT"] == 1) else 0
     ret.steerFaultTemporary |= self.steer_fault_temporary_counter > 100
     ret.steerFaultPermanent = False #self.steer_fault_permanent_counter > 500
 
-    ret.steeringTorque = cp.vl["RX_STEER_RELATED"]["B_RX_DRIVER_TORQUE"]
-    ret.steeringTorqueEps = cp.vl["RX_STEER_RELATED"]["B_RX_EPS_TORQUE"]
+    ret.steeringTorque = cp.vl["RX_FROM_EPS_162"]["RX_DRIVER_TORQUE"]
+    ret.steeringTorqueEps = cp.vl["RX_FROM_EPS_162"]["RX_EPS_TORQUE"]
     ret.steeringPressed = abs(ret.steeringTorque) > 50
 
     ret.doorOpen = any([cp.vl["DOOR_DRIVER"]["DOOR_REAR_RIGHT_OPEN"],

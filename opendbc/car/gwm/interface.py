@@ -29,7 +29,7 @@ class CarInterface(CarInterfaceBase):
 
   def update(self, can_packets):
     cp = self.can_parsers[Bus.main]
-    self.isEPSobeying = cp.vl["RX_STEER_RELATED"]["A_RX_STEER_REQUESTED"] == 1
+    self.isEPSobeying = cp.vl["RX_FROM_EPS_162"]["RX_EPS_APPLYING_TORQUE"] == 1
     self.steer_fault_temporary_counter = (self.steer_fault_temporary_counter + 1) if (self.lat_active and not self.isEPSobeying) \
                                           else 0
 
