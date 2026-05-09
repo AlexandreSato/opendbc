@@ -21,6 +21,7 @@ class CarState(CarStateBase):
     self.is_activation_lever_pulled = False
     self.prev_activation_lever_pulled = False
     self.main_on = False
+    self.pcm_cruise_enabled = False
     self.steer_fault_temporary_counter = 0
 
   def update(self, can_parsers) -> structs.CarState:
@@ -80,15 +81,22 @@ class CarState(CarStateBase):
     ret.leftBlindspot = bool(cp.vl["RADAR_BEHIND"]["BSM_LEFT"] > 0)
     ret.rightBlindspot = bool(cp.vl["RADAR_BEHIND"]["BSM_RIGHT"] > 0)
 
-    if cp.vl["STEER_AND_AP_STALK"]["AP_CANCEL_COMMAND"] or ret.brakePressed:
+    if cp.vl["STEER_AND_AP_STALK"]["JOLION_CRUISEMAIN_OFF"]:
       self.main_on = False
-    self.is_activation_lever_pulled = bool(cp.vl["STEER_AND_AP_STALK"]["AP_ENABLE_COMMAND"])
+    self.is_activation_lever_pulled = bool(cp.vl["STEER_AND_AP_STALK"]["JOLION_CRUISEMAIN_ON"])
     if not self.is_activation_lever_pulled and self.prev_activation_lever_pulled and not self.main_on:
       self.main_on = True
     self.prev_activation_lever_pulled = self.is_activation_lever_pulled
-
     ret.cruiseState.available = self.main_on
-    ret.cruiseState.enabled = self.main_on
+
+    if self.main_on:
+      if ((cp.vl["STEER_AND_AP_STALK"]["AP_DECREASE_SPEED_COMMAND"]) or (cp.vl["STEER_AND_AP_STALK"]["AP_INCREASE_SPEED_COMMAND"])):
+        self.pcm_cruise_enabled = True
+    else:
+      self.pcm_cruise_enabled = False
+    if ret.brakePressed:
+      self.pcm_cruise_enabled = False
+    ret.cruiseState.enabled = self.pcm_cruise_enabled
 
     return ret
 

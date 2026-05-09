@@ -96,13 +96,13 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
 
     // state machine to enter and exit controls for button enabling
     if (msg->addr == GWM_ADAS_ACTIVATION) {
-      bool cruise_button = GET_BIT(msg, 47U);
+      bool cruise_button = GET_BIT(msg, 53U);
       // enter controls on the rising edge of set or resume
       if (cruise_button && !cruise_button_prev) {
         acc_main_on = true;
       }
       // exit controls once cancel is pressed
-      bool cancel_button = GET_BIT(msg, 46U);
+      bool cancel_button = GET_BIT(msg, 52U);
       if (cancel_button || brake_pressed) {
         acc_main_on = false;
       }
