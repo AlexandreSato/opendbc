@@ -17,6 +17,8 @@
 #define GWM_MAIN_BUS 0U
 #define GWM_CAMERA_BUS  2U
 
+bool gwm_pcm_cruise_enabled = false;
+
 static uint8_t gwm_get_counter(const CANPacket_t *msg) {
   uint8_t cnt = 0;
   if ((msg->addr == GWM_SPEED) || (msg->addr == GWM_ADAS_ACTIVATION)) {
@@ -106,7 +108,20 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
       if (cancel_button) {
         acc_main_on = false;
       }
-      pcm_cruise_check(acc_main_on);
+
+      if (acc_main_on) {
+        bool activation_button = GET_BIT(msg, 50U);
+        activation_button |= GET_BIT(msg, 51U);
+        if (activation_button) {
+          gwm_pcm_cruise_enabled = true;
+        }
+      } else {
+        gwm_pcm_cruise_enabled = false;
+      }
+      if (brake_pressed) {
+        gwm_pcm_cruise_enabled = false;
+      }
+      pcm_cruise_check(gwm_pcm_cruise_enabled);
       cruise_button_prev =  cruise_button ? 1 : 0;
     }
   }
