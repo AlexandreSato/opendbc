@@ -106,7 +106,7 @@ def create_wheel_touch(packer, CAN: CanBus, eps_stock_values, ea_simulated_torqu
 
   # calculate checksum
   dat = packer.make_can_msg("RX_FROM_EPS_162", 0, values)[1]
-  values["B_CRC_X61"] = checksum(dat[1:8], 0x61)
+  values["CRC_X61"] = checksum(dat[1:8], 0x61)
 
   return packer.make_can_msg("RX_FROM_EPS_162", CAN.camera, values)
 
