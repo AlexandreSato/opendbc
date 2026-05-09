@@ -103,7 +103,7 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
       }
       // exit controls once cancel is pressed
       bool cancel_button = GET_BIT(msg, 52U);
-      if (cancel_button || brake_pressed) {
+      if (cancel_button) {
         acc_main_on = false;
       }
       pcm_cruise_check(acc_main_on);
