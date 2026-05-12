@@ -29,6 +29,7 @@ def create_steer_command(packer, CAN: CanBus, camera_stock_values, steer: float,
     "INVERT_DIRECTION": 1 if (steer > 0 and steer_req) else 0,
     "COUNTER": (camera_stock_values["COUNTER"] + 1) % 16,
     "BYPASS_ME": camera_stock_values["BYPASS_ME"],
+    "COUNTER_X34": (camera_stock_values["COUNTER_X34"] + 1) % 16,
   }
 
   # calculate and insert basic checksum
