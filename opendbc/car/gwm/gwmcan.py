@@ -38,6 +38,7 @@ def create_steer_command(packer, CAN: CanBus, camera_stock_values, steer: float,
   # calculate and insert CRC
   dat = packer.make_can_msg("STEER_CMD", 0, values)[1]
   values["CRC_X9B"] = checksum(dat[9:16], 0x9B)
+  values["CRC_X34"] = checksum(dat[17:24], 0x34)
 
   return packer.make_can_msg("STEER_CMD", CAN.main, values)
 
