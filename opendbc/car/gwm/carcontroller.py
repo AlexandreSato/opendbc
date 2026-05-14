@@ -1,6 +1,8 @@
+import math
 import numpy as np
 from opendbc.can.packer import CANPacker
-from opendbc.car import Bus, structs
+from opendbc.car import Bus, structs, ACCELERATION_DUE_TO_GRAVITY, DT_CTRL
+from opendbc.car.common.filter_simple import FirstOrderFilter
 from opendbc.car.lateral import apply_meas_steer_torque_limits
 from opendbc.car.interfaces import CarControllerBase
 from opendbc.car.gwm import gwmcan
@@ -19,11 +21,15 @@ class CarController(CarControllerBase):
     self.apply_torque_last = 0
     self.CAN = gwmcan.CanBus(CP)
     self.accel = 0.0
+    self.pitch = FirstOrderFilter(0, 0.5, DT_CTRL)
 
   def update(self, CC, CS, now_nanos):
     can_sends = []
     actuators = CC.actuators
     lat_active = CC.latActive and abs(CS.out.steeringTorque) < MAX_USER_TORQUE
+
+    if len(CC.orientationNED) == 3:
+      self.pitch.update(CC.orientationNED[1])
 
     # Increment counter so cancel is prioritized even without openpilot longitudinal
     if CC.cruiseControl.cancel:
@@ -69,6 +75,10 @@ class CarController(CarControllerBase):
       if self.CP.openpilotLongitudinalControl:
         standstill = actuators.longControlState == LongCtrlState.stopping
         self.accel = float(np.clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX))
+        # Calculate amount of acceleration PCM should apply to reach target, given pitch.
+        # clipped to only include donwhill angles for now
+        accel_due_to_pitch = math.sin(min(self.pitch.x, 0.0)) * ACCELERATION_DUE_TO_GRAVITY
+        self.accel = float(np.clip(self.accel + accel_due_to_pitch, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX))
         if self.accel < 0:
           accel = - abs(self.accel / CarControllerParams.ACCEL_MIN)
         else:
