@@ -37,7 +37,7 @@ class CarInterface(CarInterfaceBase):
     self.pcm_follow_distance = cp_cam.vl["ACC"]["CAR_DISTANCE_SELECTION"]
 
     ret = super().update(can_packets)
-    ret.steerFaultTemporary |= self.steer_fault_temporary_counter > 100
+    # ret.steerFaultTemporary |= self.steer_fault_temporary_counter > 100
     if (self.pcm_follow_distance == 4 and self.current_personality != 3) or \
        (self.pcm_follow_distance == 3 and self.current_personality != 3) or \
        (self.pcm_follow_distance == 2 and self.current_personality != 2) or \
