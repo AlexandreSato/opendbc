@@ -43,6 +43,11 @@ class CAR(Platforms):
     [GWMCarDocs("Haval H6 2019-26")],
     CarSpecs(mass=2040, wheelbase=2.738, steerRatio=17.416),
   )
+  GWM_HAVAL_JOLION_HEV = GWMPlatformConfig(
+    [GWMCarDocs("Haval Jolion HEV 2022-24")],
+    CarSpecs(mass=1700, wheelbase=2.700, steerRatio=17.416),
+    dbc_dict={Bus.pt: 'gwm_haval_jolion_hev_generated'},
+  )
 
 
 GREATWALLMOTORS_VERSION_REQUEST_MULTI = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER]) + \
