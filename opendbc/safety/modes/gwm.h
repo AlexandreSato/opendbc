@@ -87,7 +87,7 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
     }
 
     if (msg->addr == GWM_RX_STEER_RELATED) {
-      int torque_meas_new = ((msg->data[6] & 0x7U) << 8) | (msg->data[7]);
+      int torque_meas_new = ((msg->data[5] & 0x7U) << 8) | (msg->data[6]);
       torque_meas_new = to_signed(torque_meas_new, 11) + 548;
       update_sample(&torque_meas, torque_meas_new);
 
@@ -130,8 +130,8 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
 static bool gwm_tx_hook(const CANPacket_t *msg) {
   const TorqueSteeringLimits GWM_TORQUE_STEERING_LIMITS = {
     .max_torque = 253,
-    .max_rate_up = 1,
-    .max_rate_down = 2,
+    .max_rate_up = 4,
+    .max_rate_down = 6,
     .max_torque_error = 80,
     .max_rt_delta = 100,
     .type = TorqueMotorLimited,
