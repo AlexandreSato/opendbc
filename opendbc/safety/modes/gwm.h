@@ -12,10 +12,16 @@
 #define GWM_LONG_CONTROL        0x143U // TX from OP to PCM
 #define GWM_BLIND_SPOT          0x16FU
 #define GWM_HUD                 0x23DU
+#define GWM_GEAR_STALK          0xC7U // RX, MK4 op-cruise: gentle/further DOWN lever gesture (arms controls)
 
 // CAN bus
 #define GWM_MAIN_BUS 0U
 #define GWM_CAMERA_BUS  2U
+
+// MK4 owns its own cruise loop (FLAG_GWM_OP_CRUISE): arm controls on the gentle-DOWN stalk gesture
+// (GWM_GEAR_STALK) instead of the FURTHER_DOWN-only msg 161 bit47. Set in gwm_init from the safety param.
+static bool gwm_op_cruise = false;
+static bool gear_stalk_down_prev = false;
 
 static uint8_t gwm_get_counter(const CANPacket_t *msg) {
   uint8_t cnt = 0;
@@ -97,17 +103,29 @@ static void gwm_rx_hook(const CANPacket_t *msg) {
     // state machine to enter and exit controls for button enabling
     if (msg->addr == GWM_ADAS_ACTIVATION) {
       bool cruise_button = GET_BIT(msg, 47U);
-      // enter controls on the rising edge of set or resume
-      if (cruise_button && !cruise_button_prev) {
+      // enter controls on the rising edge of the FURTHER_DOWN stalk gesture (MK3 / non-op-cruise only;
+      // MK4 op-cruise arms off the gentle-DOWN gesture on GWM_GEAR_STALK below)
+      if (!gwm_op_cruise && cruise_button && !cruise_button_prev) {
         acc_main_on = true;
       }
-      // exit controls once cancel is pressed
+      // exit controls once cancel (UP / lateral button) or brake is pressed — applies to both paths
       bool cancel_button = GET_BIT(msg, 46U);
       if (cancel_button || brake_pressed) {
         acc_main_on = false;
       }
       pcm_cruise_check(acc_main_on);
       cruise_button_prev =  cruise_button ? 1 : 0;
+    }
+
+    // MK4 op-cruise: enter controls on the rising edge of the gentle-or-further DOWN stalk gesture.
+    // Cancel/brake still disarm via GWM_ADAS_ACTIVATION above. carstate engages openpilot on the same bit.
+    if (gwm_op_cruise && (msg->addr == GWM_GEAR_STALK)) {
+      bool stalk_down = GET_BIT(msg, 14U);
+      if (stalk_down && !gear_stalk_down_prev) {
+        acc_main_on = true;
+      }
+      pcm_cruise_check(acc_main_on);
+      gear_stalk_down_prev = stalk_down;
     }
   }
 }
@@ -186,10 +204,31 @@ static safety_config gwm_init(uint16_t param) {
     {.msg = {{GWM_HUD, GWM_CAMERA_BUS, 64, 20U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // HUD and dashboard
   };
 
+  // MK4 op-cruise needs GWM_GEAR_STALK whitelisted so the rx hook is called for it (the arm lives there).
+  // 20 Hz periodic on the main bus; checksum/counter algorithm not reverse-engineered, so ignore both.
+  // Separate array so MK3 (which has no 0xC7) doesn't fault on a missing message.
+  static RxCheck gwm_op_cruise_rx_checks[] = {
+    {.msg = {{GWM_ADAS_ACTIVATION, GWM_MAIN_BUS, 8, 100U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // cruise state, steering angle, steer rate
+    {.msg = {{GWM_SPEED, GWM_MAIN_BUS, 64, 50U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // speed
+    {.msg = {{GWM_GAS, GWM_MAIN_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},   // gas pedal
+    {.msg = {{GWM_BRAKE, GWM_MAIN_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // brake2
+    {.msg = {{GWM_RX_STEER_RELATED, GWM_MAIN_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // eps feedback to camera
+    {.msg = {{GWM_STEER_CMD, GWM_CAMERA_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // copy stock steering cmd
+    {.msg = {{GWM_CRUISE, GWM_CAMERA_BUS, 64, 10U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // CRUISE_STATE, ACC
+    {.msg = {{GWM_LONG_CONTROL, GWM_CAMERA_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // Longitudinal control message from camera
+    {.msg = {{GWM_BLIND_SPOT, GWM_MAIN_BUS, 64, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // Blind spot monitor
+    {.msg = {{GWM_HUD, GWM_CAMERA_BUS, 64, 20U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // HUD and dashboard
+    {.msg = {{GWM_GEAR_STALK, GWM_MAIN_BUS, 8, 20U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}}, // MK4: gentle-DOWN engage gesture
+  };
+
   bool gwm_longitudinal = false;
+  gwm_op_cruise = false;
+  gear_stalk_down_prev = false;
   #ifdef ALLOW_DEBUG
    const int FLAG_GWM_LONG_CONTROL = 1;
+   const int FLAG_GWM_OP_CRUISE = 2;
    gwm_longitudinal = GET_FLAG(param, FLAG_GWM_LONG_CONTROL);
+   gwm_op_cruise = GET_FLAG(param, FLAG_GWM_OP_CRUISE);
  #else
    SAFETY_UNUSED(param);
  #endif
@@ -197,8 +236,13 @@ static safety_config gwm_init(uint16_t param) {
   // FIXME: cppcheck thinks that gwm_longitudinal is always false. This is not true
   // if ALLOW_DEBUG is defined but cppcheck is run without ALLOW_DEBUG
   // cppcheck-suppress knownConditionTrueFalse
-  return gwm_longitudinal ? BUILD_SAFETY_CFG(gwm_rx_checks, GWM_LONG_TX_MSGS) : \
-                            BUILD_SAFETY_CFG(gwm_rx_checks, GWM_TX_MSGS);
+  safety_config ret = gwm_longitudinal ? BUILD_SAFETY_CFG(gwm_rx_checks, GWM_LONG_TX_MSGS) : \
+                                          BUILD_SAFETY_CFG(gwm_rx_checks, GWM_TX_MSGS);
+  // cppcheck-suppress knownConditionTrueFalse
+  if (gwm_op_cruise) {
+    SET_RX_CHECKS(gwm_op_cruise_rx_checks, ret);
+  }
+  return ret;
 }
 
 const safety_hooks gwm_hooks = {

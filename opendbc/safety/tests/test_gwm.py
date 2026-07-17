@@ -133,5 +133,59 @@ class TestGwmSafety(common.CarSafetyTest, common.MotorTorqueSteeringSafetyTest, 
     self.assertFalse(self._rx(msg))
 
 
+class TestGwmOpCruiseSafety(unittest.TestCase):
+  """MK4 owns its own cruise loop (pcmCruise=False): the panda arms controls on the gentle-or-further
+  DOWN stalk gesture (msg 0xC7 GEAR_STALK bit STALK_DOWN), not the FURTHER_DOWN-only msg 161 bit47 that
+  the MK3 path uses. Cancel (msg 161) and brake still disarm. Uses the MK4 DBC + the OP_CRUISE flag."""
+
+  mk4 = "gwm_haval_h6_mk4_generated"
+  TX_MSGS = None  # rx-only arm test; excludes this class from the cross-mode TX scan in common.py
+
+  def setUp(self):
+    self.packer = CANPackerSafety(self.mk4)
+    self.safety = libsafety_py.libsafety
+    self.safety.set_safety_hooks(CarParams.SafetyModel.gwm,
+                                 GwmSafetyFlags.LONG_CONTROL | GwmSafetyFlags.OP_CRUISE)
+    self.safety.init_tests()
+
+  def _rx(self, msg):
+    return self.safety.safety_rx_hook(msg)
+
+  def _gear_stalk_msg(self, down):
+    return self.packer.make_can_msg_safety("GEAR_STALK", 0, {"STALK_DOWN": 1 if down else 0})
+
+  def _stalk_msg(self, enable=0, cancel=0):
+    values = {"AP_ENABLE_COMMAND": enable, "AP_CANCEL_COMMAND": cancel}
+    return self.packer.make_can_msg_safety("STEER_AND_AP_STALK", 0, values, fix_checksum=checksum)
+
+  def test_gentle_down_engages(self):
+    self.assertFalse(self.safety.get_controls_allowed())
+    self._rx(self._gear_stalk_msg(False))
+    self.assertFalse(self.safety.get_controls_allowed())
+    self._rx(self._gear_stalk_msg(True))  # rising edge of STALK_DOWN
+    self.assertTrue(self.safety.get_controls_allowed())
+
+  def test_further_down_161_does_not_engage(self):
+    # under op-cruise the legacy msg 161 bit47 (FURTHER_DOWN / AP_ENABLE) arm is disabled
+    self.assertFalse(self.safety.get_controls_allowed())
+    self._rx(self._stalk_msg(enable=1))
+    self.assertFalse(self.safety.get_controls_allowed())
+
+  def test_cancel_disengages(self):
+    self._rx(self._gear_stalk_msg(True))
+    self.assertTrue(self.safety.get_controls_allowed())
+    self._rx(self._stalk_msg(cancel=1))
+    self.assertFalse(self.safety.get_controls_allowed())
+
+  def test_no_engage_without_rising_edge(self):
+    # a held STALK_DOWN (no rest in between) must not re-arm after a cancel
+    self._rx(self._gear_stalk_msg(True))
+    self.assertTrue(self.safety.get_controls_allowed())
+    self._rx(self._stalk_msg(cancel=1))
+    self.assertFalse(self.safety.get_controls_allowed())
+    self._rx(self._gear_stalk_msg(True))  # still high, no rising edge -> stays disarmed
+    self.assertFalse(self.safety.get_controls_allowed())
+
+
 if __name__ == "__main__":
   unittest.main()

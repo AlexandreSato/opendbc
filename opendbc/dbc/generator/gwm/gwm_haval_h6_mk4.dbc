@@ -1,0 +1,304 @@
+BO_ 96 CAR_OVERALL_SIGNALS2: 64 XXX
+ SG_ CRC1 : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ COUNTER1 : 59|4@0+ (1,0) [0|15] "" XXX
+ SG_ CRC2 : 71|8@0+ (1,0) [0|255] "" XXX
+ SG_ GAS_POSITION : 79|8@0+ (0.393700787,0) [0|255] "%" XXX
+ SG_ BRAKE_SIGNAL : 86|1@0+ (1,0) [0|1] "" XXX
+ SG_ ACC_GAS_POSITION : 103|8@0+ (0.393700787,0) [0|255] "%" XXX
+ SG_ COUNTER2 : 123|4@0+ (1,0) [0|15] "" XXX
+ SG_ CRC3 : 135|8@0+ (1,0) [0|255] "" XXX
+ SG_ REQ_REVIEW_UND_SIGNAL : 143|10@0+ (1,0) [0|255] "" XXX
+ SG_ REQ_REVIEW_POWER_CONSUMPTION : 144|9@0+ (1,-175) [0|511] "" XXX
+ SG_ REQ_REVIEW_POWER_CONSUMPTION2 : 180|9@0+ (1,-176) [0|511] "" XXX
+ SG_ COUNTER3 : 187|4@0+ (1,0) [0|15] "" XXX
+ SG_ REQ_REVIEW_POWER_STATE_SIGNAL : 302|4@0+ (1,0) [0|15] "" XXX
+ SG_ REQ_REVIEW_POWER_STATE_SIGNAL2 : 370|1@0+ (1,0) [0|1] "" XXX
+
+BO_ 147 IMPRECISE_SPEED_INFORMATION: 8 XXX
+ SG_ IMPRECISE_SPEED : 15|8@0+ (3.5,0) [0|255] "kph" XXX
+ SG_ REQ_REVIEW_SPEED : 31|8@0+ (0.430107526,0) [0|255] "Kph" XXX
+ SG_ REQ_REVIEW_SPEED2 : 39|8@0+ (0.430107526,0) [0|255] "Kph" XXX
+ SG_ REQ_REVIEW_POWER_CONSUMPTION : 52|8@0+ (1,0) [0|255] "" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 161 STEER_AND_AP_STALK: 8 XXX
+ SG_ CRC_X2D : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ STEERING_ANGLE : 13|13@0+ (0.1,0) [0|65535] "degs" XXX
+ SG_ STEERING_DIRECTION : 16|1@0+ (1,0) [0|1] "" XXX
+ SG_ STEERING_RATE : 29|12@0+ (0.004,0) [0|4095] "" XXX
+ SG_ RATE_DIRECTION : 33|2@0+ (1,0) [0|3] "" XXX
+ SG_ AP_REDUCE_DISTANCE_COMMAND : 44|1@0+ (1,0) [0|1] "" XXX
+ SG_ AP_INCREASE_DISTANCE_COMMAND : 45|1@0+ (1,0) [0|1] "" XXX
+ SG_ AP_CANCEL_COMMAND : 46|1@0+ (1,0) [0|1] "" XXX
+ SG_ AP_ENABLE_COMMAND : 47|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|255] "" XXX
+
+BO_ 181 GAS_PEDAL: 64 XXX
+ SG_ GAS_PEDAL_CMD : 207|8@0+ (0.393700787,0) [0|100] "%" XXX
+ SG_ GAS_PEDAL_USER : 247|8@0+ (0.393700787,0) [0|100] "%" XXX
+
+BO_ 189 NEW_MSG_BD: 16 XXX
+ SG_ CRC : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ COUNTER_1 : 59|12@0+ (1,0) [0|4095] "" XXX
+ SG_ ACTIVE_WHEN_DISENGAGING : 74|9@0+ (1,0) [0|511] "" XXX
+ SG_ COUNTER_2 : 123|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 199 GEAR_STALK: 8 XXX
+ SG_ CRC : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ GEAR_STALK_POSITION : 15|8@0+ (1,0) [0|255] "" XXX
+ SG_ STALK_DOWN : 14|1@0+ (1,0) [0|1] "" XXX
+ SG_ STALK_UP : 13|1@0+ (1,0) [0|1] "" XXX
+ SG_ STALK_FURTHER : 12|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 259 SPEED: 64 XXX
+ SG_ CRC : 199|8@0+ (1,0) [0|255] "" XXX
+ SG_ SPEED : 239|8@0+ (1,0) [0|255] "Khp" XXX
+ SG_ COUNTER2 : 251|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 283 NEW_MSG_11B: 64 XXX
+ SG_ CRC1 : 0|8@1+ (1,0) [0|255] "" XXX
+ SG_ COUNTER1 : 59|12@0+ (1,0) [0|4095] "" XXX
+ SG_ COUNTER2 : 123|4@0+ (1,0) [0|15] "" XXX
+ SG_ CRC2 : 135|8@0+ (1,0) [0|255] "" XXX
+ SG_ NEW_SIGNAL_8 : 140|9@0+ (1,0) [0|511] "" XXX
+ SG_ NEW_SIGNAL_7 : 145|1@0+ (1,0) [0|1] "" XXX
+ SG_ NEW_SIGNAL_5 : 153|2@0+ (1,0) [0|3] "" XXX
+ SG_ NEW_SIGNAL_6 : 155|4@1+ (1,0) [0|15] "" XXX
+ SG_ RELATED3 : 165|14@0+ (1,0) [0|255] "" XXX
+ SG_ NEW_SIGNAL_3 : 183|10@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER3 : 188|5@0+ (1,0) [0|31] "" XXX
+ SG_ RELATED1 : 230|7@0+ (1,0) [0|127] "" XXX
+ SG_ NEW_SIGNAL_4 : 255|1@0+ (1,0) [0|1] "" XXX
+ SG_ RELATED2 : 351|15@0+ (1,0) [0|32767] "" XXX
+ SG_ CRC3 : 384|8@1+ (1,0) [0|255] "" XXX
+ SG_ COUNTER4 : 443|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 288 BRAKE2: 64 XXX
+ SG_ CRC : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ PEDAL_BRAKE_PRESSED : 11|1@0+ (1,0) [0|1] "" XXX
+ SG_ REQ_REVIEW_MOVING : 22|1@0+ (1,0) [0|1] "" XXX
+ SG_ USER_BRAKE : 37|4@0+ (1,0) [0|3] "" XXX
+ SG_ REVIEW_REQ_BRAKE_SIGNAL2 : 47|8@0+ (1,0) [0|255] "" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 299 STEER_CMD: 64 XXX
+ SG_ BYPASSME_1 : 7|64@0+ (1,0) [0|1.84467440737096e+19] "" XXX
+ SG_ CRC_COUNTER : 71|8@0+ (1,0) [0|255] "" XXX
+ SG_ BYPASSME_2 : 79|52@0+ (1,0) [0|4.5035996273705e+15] "" XXX
+ SG_ COUNTER_1 : 123|4@0+ (1,0) [0|15] "" XXX
+ SG_ CRC_STEER : 135|8@0+ (1,0) [0|255] "" XXX
+ SG_ STEER_REQUEST : 143|14@0+ (0.1,-779.6) [0|16383] "" XXX
+ SG_ BYPASSME_4_HEAD : 145|18@0+ (1,0) [0|262143] "" XXX
+ SG_ EPS_LKAS_ANGLE_ENABLE : 175|8@0+ (1,0) [0|255] "" XXX
+ SG_ EPS_LKAS_ANGLE_CFG : 183|8@0+ (1,0) [0|255] "" XXX
+ SG_ COUNTER_2 : 184|4@1+ (1,0) [0|15] "" XXX
+ SG_ BYPASSME_4_TAIL : 191|4@0+ (1,0) [0|15] "" XXX
+ SG_ BYPASSME_5 : 199|259@0+ (1,0) [0|9.2633671389853e+77] "" XXX
+ SG_ COUNTER_3 : 452|11@0+ (1,0) [0|2047] "" XXX
+ SG_ COUNTER_4 : 457|2@0+ (1,0) [0|3] "" XXX
+ SG_ BYPASSME_6 : 471|48@0+ (1,0) [0|281474976710655] "" XXX
+
+BO_ 311 BRAKE: 64 XXX
+ SG_ CRC1 : 71|8@0+ (1,0) [0|255] "" XXX
+ SG_ REQ_REVIEW_DRIVE_MODE : 77|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER1 : 123|4@0+ (1,0) [0|15] "" XXX
+ SG_ CRC2 : 135|8@0+ (1,0) [0|255] "" XXX
+ SG_ BRAKE_SIGNAL1 : 152|1@0+ (1,0) [0|1] "" XXX
+ SG_ BRAKE_SIGNAL2 : 155|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER2 : 187|4@0+ (1,0) [0|15] "" XXX
+ SG_ CRC3 : 199|8@0+ (1,0) [0|255] "" XXX
+ SG_ BRAKE_PRESSURE : 207|13@0+ (1,0) [0|8191] "" XXX
+ SG_ COUNTER3 : 251|4@0+ (1,0) [0|15] "" XXX
+ SG_ CRC4 : 263|8@0+ (1,0) [0|255] "" XXX
+
+BO_ 315 WHEEL_SPEEDS: 64 XXX
+ SG_ CRC_X7F : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ FRONT_LEFT_WHEEL_SPEED : 12|13@0+ (0.05924739,0) [0|8191] "Kph" XXX
+ SG_ FRONT_RIGHT_WHEEL_SPEED : 28|13@0+ (0.05924739,0) [0|8191] "Kph" XXX
+ SG_ FRONT_DISTANCE_ACCUMULATOR : 47|16@0+ (1,0) [0|65535] "??" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+ SG_ REAR_CRC : 327|8@0+ (1,0) [0|255] "" XXX
+ SG_ REAR_LEFT_WHEEL_SPEED : 332|13@0+ (0.05924739,0) [0|8191] "Kph" XXX
+ SG_ REAR_RIGHT_WHEEL_SPEED : 348|13@0+ (0.05924739,0) [0|8191] "Kph" XXX
+ SG_ REAR_DISTANCE_ACCUMULATOR : 367|16@0+ (1,0) [0|65535] "" XXX
+ SG_ REAR_COUNTER : 379|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 323 ACC_CMD: 64 XXX
+ SG_ CRC_BRAKE_0xEF : 71|8@0+ (1,0) [0|255] "" XXX
+ SG_ BRAKE_OR_GAS_REQ : 76|5@0+ (1,0) [0|15] "" XXX
+ SG_ BRAKE_GAS_STATE_2 : 87|18@0+ (1,0) [0|4294967295] "" XXX
+ SG_ STANDSTILL : 101|1@0+ (1,0) [0|1] "" XXX
+ SG_ BRAKE_CMD : 111|8@0+ (1,-181) [0|255] "" XXX
+ SG_ SPEED_REAL : 119|8@0+ (1,0) [0|255] "Kph" XXX
+ SG_ COUNTER_BRAKE : 123|4@0+ (1,0) [0|15] "" XXX
+ SG_ BYPASSME_2 : 135|64@0+ (1,0) [0|2.47588007857076e+27] "" XXX
+ SG_ CRC_ACC_0x87 : 199|8@0+ (1,0) [0|255] "" XXX
+ SG_ BYPASS_ACC1 : 207|19@0+ (1,0) [0|524287] "" XXX
+ SG_ GAS_CMD : 220|13@0+ (1,-192) [0|4095] "" XXX
+ SG_ BRAKE_GAS_STATE : 239|20@0+ (1,0) [0|1048575] "" XXX
+ SG_ COUNTER_ACC : 251|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 327 RX_STEER_RELATED: 64 XXX
+ SG_ A_CRC_X61 : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ A_BYPASSME_2 : 8|45@0+ (1,0) [0|35184372088831] "" XXX
+ SG_ A_RX_STEER_REQUESTED : 10|2@0+ (1,0) [0|3] "" XXX
+ SG_ A_BYPASSME_1 : 15|5@0+ (1,0) [0|31] "" XXX
+ SG_ A_COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+ SG_ B_CRC_X61 : 71|8@0+ (1,0) [0|255] "" XXX
+ SG_ B_RX_DRIVER_TORQUE : 78|11@0- (1,0) [0|4095] "" XXX
+ SG_ B_BYPASSME_1 : 79|1@0+ (1,0) [0|1] "" XXX
+ SG_ B_BYPASSME_2 : 83|25@0+ (1,0) [0|33554431] "" XXX
+ SG_ B_COUNTER : 123|4@0+ (1,0) [0|15] "" XXX
+ SG_ B_BYPASSME_4 : 124|1@0+ (1,0) [0|1] "" XXX
+ SG_ EPS_FAULT_PERMANENT : 125|1@0+ (1,0) [0|1] "" XXX
+ SG_ B_BYPASSME_3 : 127|2@0+ (1,0) [0|15] "" XXX
+
+BO_ 367 RADAR_BEHIND: 64 XXX
+ SG_ BSM_RIGHT : 82|2@0+ (1,0) [0|3] "" XXX
+ SG_ BSM_LEFT : 85|2@0+ (1,0) [0|3] "" XXX
+ SG_ L_ADJACENT : 161|6@0+ (1,0) [0|63] "" XXX
+ SG_ L_APPROACHING : 171|7@0+ (1,0) [0|127] "" XXX
+ SG_ R_ADJACENT : 277|8@0- (1,0) [0|255] "" XXX
+ SG_ R_APPROACHING : 291|8@0+ (1,0) [0|255] "" XXX
+
+BO_ 412 LIGHTS: 16 XXX
+ SG_ RIGHT_TURN_SIGNAL : 30|1@0+ (1,0) [0|1] "ON/OFF ACCORDINGLY LIGHT" XXX
+ SG_ LEFT_TURN_SIGNAL : 31|1@0+ (1,0) [0|1] "ON/OFF ACCORDINGLY LIGHT" XXX
+
+BO_ 545 DRIVE_GEAR: 8 XXX
+ SG_ CRC : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ DRIVE_MODE_GEAR_CMD : 49|2@0+ (1,0) [0|7] "" XXX
+ SG_ DRIVE_MODE_GEAR_ENABLED : 50|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+ SG_ DRIVE_MODE_GEAR_REAL : 61|2@0+ (1,0) [0|3] "" XXX
+
+BO_ 573 LATERAL_STATE: 64 XXX
+ SG_ BYPASSME_1 : 71|32@0+ (1,0) [0|4294967295] "" XXX
+ SG_ BYPASSME_2 : 103|32@0+ (1,0) [0|4294967295] "" XXX
+ SG_ CRC_X66 : 135|8@0+ (1,0) [0|255] "" XXX
+ SG_ LKAS_STATE : 141|3@0+ (1,0) [0|3] "" XXX
+ SG_ BY_PASSME : 146|39@0+ (1,0) [0|549755813887] "" XXX
+ SG_ BYPASSME_CRUISE : 151|5@0+ (1,0) [0|31] "" XXX
+ SG_ COUNTER : 187|4@0+ (1,0) [0|15] "" XXX
+ SG_ BYPASSME_3 : 199|32@0+ (1,0) [0|4294967295] "" XXX
+ SG_ BYPASSME_4 : 231|32@0+ (1,0) [0|4294967295] "" XXX
+ SG_ BYPASSME_5 : 263|32@0+ (1,0) [0|4294967295] "" XXX
+ SG_ BYPASSME_6 : 295|32@0+ (1,0) [0|4294967295] "" XXX
+
+BO_ 581 EPS_STATUS: 8 XXX
+ SG_ _CHECKSUM : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ EPS_ANGLE_CMD : 29|13@0+ (0.032,-91.09) [-180|180] "deg" XXX
+ SG_ EPS_ANGLE : 45|14@0+ (0.041922,-364.81) [-180|180] "deg" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 596 WHEEL_ACC_BUTTONS: 8 XXX
+ SG_ AP_DECREASE_SPEED_COMMAND : 16|1@0+ (1,0) [0|1] "" XXX
+ SG_ AP_INCREASE_SPEED_COMMAND : 20|1@0+ (1,0) [0|1] "" XXX
+
+BO_ 659 LATERAL_SPEED: 8 XXX
+ SG_ LATERAL_FORCE : 16|9@0+ (1,0) [0|127] "" XXX
+
+BO_ 683 ACC: 64 XXX
+ SG_ COUNTER1 : 123|4@0+ (1,0) [0|15] "" XXX
+ SG_ CRC1 : 135|8@0+ (1,0) [0|255] "" XXX
+ SG_ CRUISE_STATE_2 : 149|3@0+ (1,0) [0|7] "" XXX
+ SG_ CAR_DISTANCE_SELECTION : 170|3@0+ (1,0) [0|7] "" XXX
+ SG_ ACC_SPEED_SELECTION : 183|8@0+ (1,0) [0|255] "Kph" XXX
+ SG_ COUNTER2 : 187|4@0+ (1,0) [0|15] "" XXX
+
+BO_ 714 BUTTONS: 8 XXX
+ SG_ LOCK_DOORS_BUTTON : 16|1@0+ (1,0) [0|1] "" XXX
+
+BO_ 726 REGEN_CONFIG: 64 XXX
+ SG_ REGEN_LEVEL : 367|8@0+ (1,0) [0|255] "" XXX
+
+BO_ 793 DOOR_DRIVER: 16 XXX
+ SG_ REQ_REVIEW_CAR_STATE : 16|1@0+ (1,0) [0|1] "" XXX
+ SG_ DOOR_REAR_RIGHT_OPEN : 19|1@0+ (1,0) [0|1] "" XXX
+ SG_ DOOR_FRONT_RIGHT_OPEN : 20|1@0+ (1,0) [0|1] "" XXX
+ SG_ DOOR_REAR_LEFT_OPEN : 21|1@0+ (1,0) [0|1] "" XXX
+ SG_ DOOR_DRIVER_OPEN : 22|1@0+ (1,0) [0|1] "" XXX
+
+BO_ 837 DOOR_LOCK_STATES: 16 XXX
+ SG_ DOOR_LOCK_STATE : 13|1@0+ (1,0) [0|1] "" XXX
+ SG_ DOOR_LOCK_STATE2 : 34|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER : 67|4@0+ (1,0) [0|15] "" XXX
+ SG_ ACCUMULATOR : 79|6@0+ (1,0) [0|63] "" XXX
+
+BO_ 849 SEATBELT: 16 XXX
+ SG_ CRC : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ SEAT_BELT_DRIVER_STATE : 11|1@0+ (1,0) [0|1] "" XXX
+ SG_ SEAT_BELT_DRIVER_STATE2 : 24|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER : 59|4@0+ (1,0) [0|15] "" XXX
+
+CM_ SG_ 96 GAS_POSITION "0 - 100%";
+CM_ SG_ 96 BRAKE_SIGNAL "1 = BRAKE PRESSED";
+CM_ SG_ 96 ACC_GAS_POSITION "0 - 100% | WHEN ACC REMAINS INFORMATION";
+CM_ SG_ 96 REQ_REVIEW_POWER_CONSUMPTION2 "REQ FACTOR CONVERTER";
+CM_ SG_ 96 REQ_REVIEW_POWER_STATE_SIGNAL "1 = OFF | 12 WARM-UP | 5 = ON";
+CM_ SG_ 96 REQ_REVIEW_POWER_STATE_SIGNAL2 "1 = OFF | 0 = ON";
+CM_ SG_ 147 IMPRECISE_SPEED "lower precision, reverse is positive as well";
+CM_ SG_ 147 REQ_REVIEW_SPEED "INITIALLY ADJUSTED TO KPH BUT ITS NOT";
+CM_ SG_ 147 REQ_REVIEW_SPEED2 "INITIALLY ADJUSTED TO KPH BUT ITS NOT";
+CM_ SG_ 161 STEERING_ANGLE "0 CENTER";
+CM_ SG_ 161 STEERING_DIRECTION "1=right (CW), 0=left (CCW). Confirmed MK4: changes exactly at wheel center.";
+CM_ SG_ 161 STEERING_RATE "Peak identified 3680, 0 = stopped";
+CM_ SG_ 161 RATE_DIRECTION "Unconfirmed — current VAL_ labels make no sense. Needs re-analysis.";
+CM_ SG_ 161 AP_REDUCE_DISTANCE_COMMAND "AUTOPILOT STALK";
+CM_ SG_ 161 AP_CANCEL_COMMAND "1 when stalk pulled UP (D→N, D→R skip-N, or any→P lateral button). Confirmed MK4.";
+CM_ SG_ 161 AP_ENABLE_COMMAND "1 when stalk pulled DOWN (R→D, N→D). Confirmed MK4. Also triggers ACC activation.";
+CM_ SG_ 259 SPEED "PRECISE, KPH, DASHBOARD SPEED, BIT LOWER THAN GPS SPEED";
+CM_ SG_ 288 REQ_REVIEW_MOVING "1 = CAR IS MOVING";
+CM_ SG_ 288 REVIEW_REQ_BRAKE_SIGNAL2 "0 | 128 BRAKE PRESSED";
+CM_ SG_ 299 CRC_COUNTER "byte8: CRC-8 (poly=0x1D, init=0xD1) over bytes 9-15 (constant payload + COUNTER_1).";
+CM_ SG_ 299 CRC_STEER "byte16: CRC-8 (poly=0x1D, init=0x05) over bytes 17-23 (STEER_REQUEST + COUNTER_2). Recompute whenever STEER_REQUEST or COUNTER_2 changes.";
+CM_ SG_ 299 STEER_REQUEST "14-bit angle command (factor=0.1, offset=-779.6). raw14=round((angle_deg+779.6)*10), zero-point raw14=7796. Offset is the EPS command-response transfer (raw->actual wheel), not the camera-signal zero: with -778.4 the wheel SETTLED 1.2deg RIGHT of command (d3 engaged, n=34766 median; OEM mirror corr slope 0.999). -779.6 lands the wheel on the commanded angle (kills a constant rightward steering bias). Earlier -777.7->-778.4 was a partial fix of the same offset.";
+CM_ SG_ 299 EPS_LKAS_ANGLE_ENABLE "byte21: EPS activation flag. 0x3f = LKAS angle-control active (EPS executes STEER_REQUEST). 0x1f = passive (EPS ignores). Must be 0x3f when commanding. Verified vs 3000 OEM frames in route_55 seg34 (2834 active, 166 passive transitions).";
+CM_ SG_ 299 EPS_LKAS_ANGLE_CFG "byte22: EPS angle-control config byte. 0xe5 = active (paired with EPS_LKAS_ANGLE_ENABLE=0x3f). 0x81 = passive. Hardcode to 0xe5 when commanding angle.";
+CM_ SG_ 311 REQ_REVIEW_DRIVE_MODE "1 = P | 0 = D";
+CM_ SG_ 311 BRAKE_SIGNAL1 "0 = NO | 1 = BRAKE PRESSED";
+CM_ SG_ 311 BRAKE_SIGNAL2 "0 NO | 1 = BRAKE PRESSED";
+CM_ SG_ 311 BRAKE_PRESSURE "MAX PRESSURE IDENTIFIED = 4184 | 0 = NO PRESSURE";
+CM_ SG_ 315 FRONT_LEFT_WHEEL_SPEED "Based on the car's dashboard speed";
+CM_ SG_ 315 FRONT_RIGHT_WHEEL_SPEED "Based on the car's dashboard speed";
+CM_ SG_ 315 FRONT_DISTANCE_ACCUMULATOR "?? doubts";
+CM_ SG_ 315 REAR_LEFT_WHEEL_SPEED "Based on the car's dashboard speed";
+CM_ SG_ 315 REAR_RIGHT_WHEEL_SPEED "Based on the car's dashboard speed";
+CM_ SG_ 315 REAR_DISTANCE_ACCUMULATOR "PULSES";
+CM_ SG_ 323 BRAKE_GAS_STATE_2 "Redundant copy of the powertrain brake-vs-gas state (was BYPASSME_1, the ACC_CMD 87|18 instance). 131068(0x1FFFC)=brake, 131070(0x1FFFE)=gas (bit1). Set consistently with BRAKE_GAS_STATE so regen activates while braking.";
+CM_ SG_ 323 SPEED_REAL "PRECISE, EQUAL GPS SPEED";
+CM_ SG_ 323 BRAKE_GAS_STATE "Powertrain brake-vs-gas STATE (was BYPASS_ACC2). 0=brake, 0x80000(524288)=gas. The HEV ECU keys REGENERATION off this (and the redundant BRAKE_GAS_STATE_2), NOT off BRAKE_OR_GAS_REQ. openpilot must set 0 when braking (REQ=13) or regen never activates. Regen MAGNITUDE (msg 283 byte22) stays the powertrain's call from the driver's Low/Normal/Heavy setting + brake demand. Verified OEM dd 2026-06-26.";
+CM_ SG_ 412 LEFT_TURN_SIGNAL "ON/OFF ACCORDINGLY LIGHT";
+CM_ SG_ 545 DRIVE_MODE_GEAR_CMD "Commanded/selected gear (full byte). 0=P, 5=D, 6=N, 7=R. Bit2 overlaps with DRIVE_MODE_GEAR_ENABLED.";
+CM_ SG_ 545 DRIVE_MODE_GEAR_ENABLED "1 when any non-P gear is engaged (byte6 bit2). Mirrors DRIVE_MODE_GEAR_CMD != 0.";
+CM_ SG_ 545 DRIVE_MODE_GEAR_REAL "Actual engaged gear. 0=P, 1=D, 2=N, 3=R. Use this for gear detection — supersedes GEAR_STATE_BYTE workaround.";
+CM_ BO_ 573 "HAVE LATERAL STATE INFO";
+CM_ SG_ 581 _CHECKSUM "crc8(bytes[1:8], poly=0x1D, init=0x4F)";
+CM_ SG_ 581 EPS_ANGLE_CMD "EPS echo of commanded angle. Fit angle=0.032*raw-91.09 (RMSE 3.2deg). This is the angle the EPS received from STEER_CMD and reflects back — NOT torque. byte1 (0x51-0x55, slow-changing) and byte6 (full range, data) are unidentified signals in this message.";
+CM_ SG_ 581 EPS_ANGLE "EPS steering-angle readback (diagnostic only, NOT used by carstate). Fit angle=0.041922*raw-364.81 (offset re-anchored 2026-06-24 to STEERING_ANGLE: prior -363.92 read ~0.9deg high near center, d3 |ang|<15). Noisy on MK4 (~0.77deg RMSE) and lags STEERING_ANGLE by 0.081s (20Hz msg).";
+CM_ SG_ 683 CAR_DISTANCE_SELECTION "Follow-distance dash selected by driver. MK4 PHEV has FOUR dashes 1/2/3/4 (closest..farthest); 0 is a boot/uninit transient. Folded to openpilot's 3 personalities dash1->aggressive, 2->standard, 3->standard, 4->relaxed in gwm/interface.py.";
+CM_ SG_ 714 LOCK_DOORS_BUTTON "1 = PRESSED";
+CM_ SG_ 726 REGEN_LEVEL "Driver's regen-level selector (msg 726 byte45). Values 8=Normal, 16=Low, 24=Heavy. Decoded on drive ec by correlating with regen-on (msg283 b22) vs decel: measured entry-points Low~-0.5, Normal~-0.3, Heavy~0 m/s^2. Heavy is the strongest of the 3 but NOT full one-pedal (separate one-pedal config, not enabled). Used by carcontroller to set the regen brake-state entry threshold per level.";
+CM_ SG_ 793 REQ_REVIEW_CAR_STATE "1 = STOPPED | 0 = MOVING";
+CM_ SG_ 837 DOOR_LOCK_STATE "0 = LOCKED / 1 = UNLOCKED";
+CM_ SG_ 837 DOOR_LOCK_STATE2 "0 = LOCKED / 1 = UNLOCKED";
+CM_ SG_ 849 SEAT_BELT_DRIVER_STATE "0 = Fastened / 1 = Released";
+CM_ SG_ 849 SEAT_BELT_DRIVER_STATE2 "0 = Fastened / 1 = Released";
+CM_ SG_ 199 GEAR_STALK_POSITION "Gear/AP stalk lever position (byte1). Momentary lever springs back to 0x0f=rest. Decoded on drive fa (all-bus sweep, can_data/fa_clean.py + fa_c7_pattern.py): 0x0f rest, 0x4b gentle DOWN, 0x5a FURTHER_DOWN (and P->D), 0x2d gentle UP, 0x3c FURTHER_UP. Redundant-complement bit encoding: DOWN=bit6(set)/bit2(clear), UP=bit5(set)/bit1(clear), FURTHER=bit4(set)/bit0(clear); bit3 always 1, bit7 always 0. This is the ONLY message that distinguishes gentle vs further and up vs down (msg 161 AP_ENABLE/CANCEL only fire on the FURTHER gestures). The lateral->PARK button does NOT appear here. MK4 PHEV.";
+CM_ SG_ 199 STALK_DOWN "byte1 bit6: 1 on ANY downward lever motion (gentle DOWN 0x4b AND FURTHER_DOWN 0x5a, plus the P->D entry). MK4 engages openpilot on the rising edge of this (gated on gear already D + no fresh gear transition + vEgo>0.5).";
+CM_ SG_ 199 STALK_UP "byte1 bit5: 1 on ANY upward lever motion (gentle UP 0x2d AND FURTHER_UP 0x3c).";
+CM_ SG_ 199 STALK_FURTHER "byte1 bit4: 1 only on the hard-detent 'further/click' gestures (FURTHER_DOWN, FURTHER_UP, P->D). Combine with STALK_DOWN/STALK_UP to tell gentle from further (gentle = direction bit set AND STALK_FURTHER=0).";
+CM_ SG_ 199 CRC "byte0: per-frame message checksum. Read-only signal (openpilot never transmits 0xC7); checksum algorithm not reverse-engineered.";
+CM_ SG_ 199 COUNTER "byte7 low nibble: rolling 0-15 message counter.";
+VAL_ 161 RATE_DIRECTION 1 "unknown_1" 2 "unknown_2" 3 "unknown_3";
+VAL_ 323 BRAKE_OR_GAS_REQ 12 "GAS_REQ" 13 "BRAKE_REQ";
+VAL_ 367 BSM_RIGHT 0 "clear" 1 "car_present" 3 "car_present_blinker_active";
+VAL_ 367 BSM_LEFT 0 "clear" 1 "car_present" 3 "car_present_blinker_active";
+VAL_ 545 DRIVE_MODE_GEAR_CMD 0 "P" 3 "R" 1 "D" 2 "N";
+VAL_ 545 DRIVE_MODE_GEAR_ENABLED 0 "disabled" 1 "enabled";
+VAL_ 545 DRIVE_MODE_GEAR_REAL 0 "P" 3 "R" 2 "N" 1 "D";
+VAL_ 573 LKAS_STATE 5 "active" 2 "require_hands_on_steer" 3 "drift_out_left" 4 "drift_out_right";
+VAL_ 683 CRUISE_STATE_2 0 "deactivated" 1 "deactivated" 2 "available" 3 "activated" 4 "activated" 5 "activated" 6 "activated" 7 "activated";
+VAL_ 683 CAR_DISTANCE_SELECTION 0 "disabled" 1 "dash1_closest" 2 "dash2" 3 "dash3" 4 "dash4_farthest";
+VAL_ 199 GEAR_STALK_POSITION 15 "rest" 75 "down" 90 "down_further" 45 "up" 60 "up_further";
